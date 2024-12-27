@@ -1,15 +1,25 @@
 #include "processes.h"
 #include "struct.h" 
 
-typedef struct {
-    int *list;
-    int length;
-} PidList;
+// Sends a signal to all the processes
+void signal_all(const PidList pids, int signal) {
+    for(int i = 0; i < pids.length; i++) {
+        if(pids.list[i] != 0) {  
+            kill(pids.list[i], signal);
+        }
+    }
+}
 
-typedef struct {
-    int *pipe_fd;
-    PidList *pid_list;
-} Buffer;
+/**
+ * @brief Creates a new buffer.
+ */
+Buffer newBuffer() {
+    Buffer buffer;
+    if (pipe(buffer.pipe_fd) == -1) {
+        perror("pipe call"); endwin(); exit(1);
+    }
+    return buffer;
+}
 
 /**
  * Creates a new process with the given function and arguments.
@@ -48,11 +58,3 @@ void readItem (int pipe_fd, Item *item) {
     }
 }
 
-// Sends a signal to all the processes
-void signal_all(const PidList pids, int signal) {
-    for(int i = 0; i < pids.length; i++) {
-        if(pids.list[i] != 0) {  
-            kill(pids.list[i], signal);
-        }
-    }
-}
