@@ -15,7 +15,7 @@ typedef struct {
  * @param func The function to run in the new process.
  * @param args The arguments to pass to the function.
  */
-void create(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *args) {
+void newTask(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *args) {
     pid_t pid = fork();
     if (pid < 0) { signal_all(*pid_list, SIGKILL); quit(); }
     if (pid == PID_CHILD) {
@@ -25,6 +25,17 @@ void create(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *arg
     }
     pid_list->list[index] = pid;
 }
+
+void readItem (int pipe_fd, Item *item) {
+    Item item;
+    while( read(pipe_fd, item, sizeof(Item)) ) {
+        if (item->line == 0) { break; }
+    }
+    
+    return item;
+}
+
+
 
 // Sends a signal to all the processes
 void signal_all(const PidList pids, int signal) {
