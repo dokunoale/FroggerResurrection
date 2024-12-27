@@ -6,6 +6,11 @@ typedef struct {
     int length;
 } PidList;
 
+typedef struct {
+    int *pipe_fd;
+    PidList *pid_list;
+} Buffer;
+
 /**
  * Creates a new process with the given function and arguments.
  *
@@ -26,16 +31,18 @@ void newTask(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *ar
     pid_list->list[index] = pid;
 }
 
-void readItem (int pipe_fd, Item *item) {
-    Item item;
-    // while there is no item to read
-    while( read(pipe_fd, item, sizeof(Item)) < 0 ) {
+// Writes an item to the pipe
+void writeItem (int pipe_fd, Item *item) {
+    while(write(pipe_fd, item, sizeof(Item)) < 0) {
         if (errno != EINTR) _exit(EXIT_FAILURE);
     }
 }
 
-void writeItem (int pipe_fd, Item *item) {
-    while(write(pipe_fd, item, sizeof(Item)) < 0) {
+// Reads an item from the pipe
+void readItem (int pipe_fd, Item *item) {
+    Item item;
+    // while there is no item to read
+    while( read(pipe_fd, item, sizeof(Item)) < 0 ) {
         if (errno != EINTR) _exit(EXIT_FAILURE);
     }
 }
