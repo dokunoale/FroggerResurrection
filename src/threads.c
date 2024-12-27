@@ -1,5 +1,5 @@
 /**
- * @note TODO: Implement the thread version of the functions.
+ * @note TODO: Implement the thread version
  */
 
 #include "threads.h" 

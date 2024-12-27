@@ -19,6 +19,7 @@ typedef struct {
  * @param index The index of the process ID.
  * @param func The function to run in the new process.
  * @param args The arguments to pass to the function.
+ * @note Process version with fork()
  */
 void newTask(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *args) {
     pid_t pid = fork();
