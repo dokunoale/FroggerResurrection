@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <errno.h>
 
 #define PID_CHILD 0
 #define PIPE_READ 0

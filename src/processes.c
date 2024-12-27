@@ -17,7 +17,7 @@ typedef struct {
  */
 void newTask(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *args) {
     pid_t pid = fork();
-    if (pid < 0) { signal_all(*pid_list, SIGKILL); quit(); }
+    if (pid < 0) { signal_all(*pid_list, SIGKILL); _exit(EXIT_FAILURE); }
     if (pid == PID_CHILD) {
         close(pipe_fd[PIPE_READ]);
         func(pipe_fd[PIPE_WRITE], args);
@@ -28,14 +28,17 @@ void newTask(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *ar
 
 void readItem (int pipe_fd, Item *item) {
     Item item;
-    while( read(pipe_fd, item, sizeof(Item)) ) {
-        if (item->line == 0) { break; }
+    // while there is no item to read
+    while( read(pipe_fd, item, sizeof(Item)) < 0 ) {
+        if (errno != EINTR) _exit(EXIT_FAILURE);
     }
-    
-    return item;
 }
 
-
+void writeItem (int pipe_fd, Item *item) {
+    while(write(pipe_fd, item, sizeof(Item)) < 0) {
+        if (errno != EINTR) _exit(EXIT_FAILURE);
+    }
+}
 
 // Sends a signal to all the processes
 void signal_all(const PidList pids, int signal) {
