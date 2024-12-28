@@ -6,8 +6,9 @@
 #define NUM_FLOWS 8
 #define MAX_CROC_PER_FLOW 5
 #define RIGHT 1
-#define LEFT -1
+#define LEFT 0
 
+//MI RICEVI??
 
 
 typedef struct{
