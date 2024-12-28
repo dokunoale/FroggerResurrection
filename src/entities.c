@@ -2,8 +2,9 @@
 #include "utils.h"
 #include "struct.h"
 #include "display.h"
+#include "handler.h"
 
-// TODO: Implement the frog function
+
 void frog (Buffer *buffer, Item *item) {
 
     while (TRUE) {
@@ -11,17 +12,28 @@ void frog (Buffer *buffer, Item *item) {
         if (c == 'q') { break;}
 
         switch (c) {
-            case KEY_UP: if (item->line > 1) line -= 1; break;
-            case KEY_DOWN: if (item->line < w_lines - 2) line += 1; break;
-            case KEY_RIGHT: if (column < w_cols - 3) column += 1; break;
-            case KEY_LEFT: if (x > 2) x -= 1; break;
+            case KEY_UP: if (item->line > 1) item->line -= 1; break;
+            case KEY_DOWN: if (item->line < GAME_HEIGHT - 2) item->line += 1; break;
+            case KEY_RIGHT: if (item->column < GAME_WITDH - 3) item->column += 1; break;
+            case KEY_LEFT: if (item->column > 2)  item->column-= 1; break;
         }
 
-        pos.x = x;
-        pos.y = y;
+        writeItem(buffer, item);
     }
 }
 
-void crocodile (Buffer *buffer, Item *item) {
-    // TODO: Implement the crocodile function
+void crocodile (Buffer *buffer, Item *item, Game game) {
+
+    while(TRUE){
+    
+        switch (game.flows[item->line].direction) //vede la direzione del flusso dove sta il coccodrillo
+        {
+        case RIGHT: item->column += 1;
+            break;
+        case LEFT: item->column -= 1;
+            break;
+        }
+        writeItem(buffer, item);
+        usleep(item->speed);
+    }
 }
