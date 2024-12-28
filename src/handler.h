@@ -8,9 +8,6 @@
 #define RIGHT 1
 #define LEFT 0
 
-//MI RICEVI??
-
-
 typedef struct{
     int id;
     int direction;
