@@ -8,6 +8,9 @@
 #define RIGHT 1
 #define LEFT 0
 
+#define MIN_SPEED 8
+#define MAX_SPEED 2
+
 typedef struct{
     int id;
     int direction;
