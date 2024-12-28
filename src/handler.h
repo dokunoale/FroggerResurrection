@@ -24,9 +24,4 @@ typedef struct{
     Item Frog;
 } Game;
 
-
-
-
-
-
 #endif //HANDLER_H
