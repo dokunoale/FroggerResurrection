@@ -1,5 +1,6 @@
 #include "processes.h"
 #include "struct.h" 
+#include "utils.h"
 
 // Sends a signal to all the processes
 void signal_all(const PidList pids, int signal) {
@@ -23,37 +24,49 @@ Buffer newBuffer() {
 
 /**
  * Creates a new process with the given function and arguments.
- *
- * @param pipe_fd The file descriptor for the pipe.
- * @param pid_list The list of process IDs.
- * @param index The index of the process ID.
- * @param func The function to run in the new process.
- * @param args The arguments to pass to the function.
- * @note Process version with fork()
+ * 
+ * @param buffer Contains the pipe file descriptor.
+ * @param func The function to be executed by the process.
+ * @param item The item to be passed to the function; contains the process id.
+ * @note Defined in processes.h
  */
-void newTask(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *args) {
+void newTask(Buffer* buffer, void (*func)(), Item* item) {
     pid_t pid = fork();
-    if (pid < 0) { signal_all(*pid_list, SIGKILL); _exit(EXIT_FAILURE); }
+    if (pid < 0) { _exit(EXIT_FAILURE); } // TODO: error handling
     if (pid == PID_CHILD) {
-        close(pipe_fd[PIPE_READ]);
-        func(pipe_fd[PIPE_WRITE], args);
+        close(buffer->pipe_fd[PIPE_READ]);
+        item->id = getpid();
+        func(buffer->pipe_fd[PIPE_WRITE], *item);
         _exit(EXIT_SUCCESS);
     }
-    pid_list->list[index] = pid;
 }
 
-// Writes an item to the pipe
-void writeItem (int pipe_fd, Item *item) {
-    while(write(pipe_fd, item, sizeof(Item)) < 0) {
+/**
+ * Writes an item to the pipe.
+ * 
+ * @param buffer Contains the pipe file descriptor.
+ * @param item The item to be written to the pipe.
+ * 
+ * @note Defined in processes.h
+ */
+void writeItem (Buffer* buffer, Item *item) {
+    while(write(buffer->pipe_fd, item, sizeof(Item)) < 0) {
         if (errno != EINTR) _exit(EXIT_FAILURE);
     }
 }
 
-// Reads an item from the pipe
-void readItem (int pipe_fd, Item *item) {
+/**
+ * Reads an item from the pipe.
+ * 
+ * @param buffer Contains the pipe file descriptor.
+ * @param item The item to be read from the pipe.
+ * 
+ * @note Defined in processes.h
+ */
+void readItem (Buffer* buffer, Item *item) {
     Item item;
     // while there is no item to read
-    while( read(pipe_fd, item, sizeof(Item)) < 0 ) {
+    while( read(buffer->pipe_fd, item, sizeof(Item)) < 0 ) {
         if (errno != EINTR) _exit(EXIT_FAILURE);
     }
 }
