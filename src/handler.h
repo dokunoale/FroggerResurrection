@@ -8,6 +8,8 @@
 #define RIGHT 1
 #define LEFT 0
 
+//PD
+
 typedef struct{
     int id;
     int direction;
