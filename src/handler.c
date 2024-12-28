@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "processes.h"
 #include "struct.h"
 #include "handler.h"
 
@@ -22,6 +22,7 @@ Game newGame() {
 void manche() {
     Buffer buffer = newBuffer();
     Game game = newGame();
+    newTask(&buffer, flow, (Item*)&game);
 
 }
 

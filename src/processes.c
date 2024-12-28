@@ -2,15 +2,6 @@
 #include "struct.h" 
 #include "utils.h"
 
-// Sends a signal to all the processes
-void signal_all(const PidList pids, int signal) {
-    for(int i = 0; i < pids.length; i++) {
-        if(pids.list[i] != 0) {  
-            kill(pids.list[i], signal);
-        }
-    }
-}
-
 /**
  * @brief Creates a new buffer.
  */
@@ -30,7 +21,7 @@ Buffer newBuffer() {
  * @param item The item to be passed to the function; contains the process id.
  * @note Defined in processes.h
  */
-void newTask(Buffer* buffer, void (*func)(), Item* item) {
+void newTask(Buffer* buffer, void (*func)(), Item *item) {
     pid_t pid = fork();
     if (pid < 0) { _exit(EXIT_FAILURE); } // TODO: error handling
     if (pid == PID_CHILD) {
@@ -39,6 +30,19 @@ void newTask(Buffer* buffer, void (*func)(), Item* item) {
         func(buffer->pipe_fd[PIPE_WRITE], *item);
         _exit(EXIT_SUCCESS);
     }
+}
+
+/**
+ * Kills a task.
+ * 
+ * @param buffer Contains the pipe file descriptor.
+ * @param item The item to be
+ * @note Defined in processes.h
+ */
+void killTask(Buffer* buffer, Item *item) {
+    close(buffer->pipe_fd[PIPE_WRITE]);
+    kill(item->id, SIGKILL);
+    waitpid(item->id, NULL, 0);
 }
 
 /**

@@ -16,13 +16,27 @@ typedef struct {
     PidList *pid_list;
 } Buffer;
 
+/**
+ * @brief The structure for an item.
+ * @note Defined in struct.h  
+ */
+typedef struct {
+    unsigned int line;
+    int column;
+    int type;
+    unsigned int dimension;
+    unsigned int speed;
+    pid_t id;
+} Item;
+
 #define PID_CHILD 0
 #define PIPE_READ 0
 #define PIPE_WRITE 1
 
 Buffer newBuffer();
-void newTask(int *pipe_fd, PidList *pid_list, int index, void (*func)(), int *args);
-void writeItem (int pipe_fd, Item *item);
-void readItem (int pipe_fd, Item *item);
+void newTask(Buffer *buffer, void (*func)(), Item *item);
+void killTask(Buffer *buffer, Item *item);
+void writeItem (Buffer *buffer, Item *item);
+void readItem (Buffer *buffer, Item *item);
 
 #endif // PROCESSES_H
