@@ -18,7 +18,13 @@ typedef struct {
 
 /**
  * @brief The structure for an item.
- * @note Defined in struct.h  
+ * @param line The line of the item.
+ * @param column The column of the item.
+ * @param type The type of the item.
+ * @param dimension The dimension of the item.
+ * @param speed The speed of the item.
+ * @param id The PID of the item.
+ * @note Defined in processes.h  
  */
 typedef struct {
     unsigned int line;

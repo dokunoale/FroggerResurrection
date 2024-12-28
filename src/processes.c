@@ -30,6 +30,7 @@ void newTask(Buffer* buffer, void (*func)(), Item *item) {
         func(buffer->pipe_fd[PIPE_WRITE], *item);
         _exit(EXIT_SUCCESS);
     }
+    item->id = pid;
 }
 
 /**

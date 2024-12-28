@@ -19,7 +19,9 @@ void frog (Buffer *buffer, Item *item) {
 
         pos.x = x;
         pos.y = y;
-
-        
     }
+}
+
+void crocodile (Buffer *buffer, Item *item) {
+    // TODO: Implement the crocodile function
 }
