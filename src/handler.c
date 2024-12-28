@@ -4,11 +4,9 @@
 
 void manche() {
     Buffer buffer = newBuffer();
-    newTask(buffer.pipe_fd, buffer.pid_list, 0, , NULL);
+    newTask(buffer.pipe_fd, buffer.pid_list, 0, NULL, NULL);
 
-    Game game = initGame()
-
-    
+    Game game = initGame();
 
 }
 
