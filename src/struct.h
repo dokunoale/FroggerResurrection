@@ -19,5 +19,6 @@ typedef struct {
 #define FROG 0
 #define FROG_DIM 1
 #define CROCODILE 1
+#define CROCODILE_DIM 3
 
 #endif // STRUCT_H

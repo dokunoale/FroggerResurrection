@@ -4,7 +4,6 @@
 // Ncurses constants
 #define NO_CURSOR 0
 #define CURSOR 1
-#define NO_CURSOR 0
 
 // Screen size for each window
 #define WIN_MAIN_HEIGHT 11
