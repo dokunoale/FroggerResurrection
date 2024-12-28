@@ -19,9 +19,9 @@ Game initGame()
 {
     Game game;
     game.Frog = {10; 7; FROG; FROG_DIM}; //posizione di partenza della rana
-    game.flows[0] = rand_num(LEFT, RIGHT) //primo flusso deciso random tra destra e sinistra
+    game.flows[0] = rand_num(LEFT, RIGHT); //primo flusso deciso random tra destra e sinistra
 
-    for(int i=1; i < NUM_FLOWS; i++)
+    for (int i=1; i < NUM_FLOWS; i++)
     {
         game.flows[i].id = i; //numero del flusso
         int previous_flow = game.flows[i-1].direction; //direzione del precedente

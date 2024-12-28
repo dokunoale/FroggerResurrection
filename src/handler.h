@@ -8,20 +8,18 @@
 #define RIGHT 1
 #define LEFT 0
 
-//PD
-
 typedef struct{
     int id;
     int direction;
     int speed;
     Item crocodiles_in_flow [MAX_CROC_PER_FLOW];
     int num_croc_in_flow;
-}Flow;
+} Flow;
 
 typedef struct{
     Flow flows[NUM_FLOWS];
     Item Frog;
-}Game;
+} Game;
 
 
 
