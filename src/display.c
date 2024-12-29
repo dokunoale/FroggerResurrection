@@ -30,7 +30,7 @@ WINDOW* initWindow(){
 
 
 
-void displayEntity(WINDOW* main_win, Item old_entity, Item new_entity){
+void displayItem(WINDOW* main_win, Item old_entity, Item new_entity){
 
     switch (new_entity.type)
     {

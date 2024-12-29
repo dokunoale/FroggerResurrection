@@ -16,7 +16,7 @@
 
 void initDisplay();
 WINDOW* initWindow();
-void displayEntity(WINDOW* main_win, Item old_item, Item new_item);
+void displayItem(WINDOW* main_win, Item old_item, Item new_item);
 
 
 #endif // DISPLAY_H

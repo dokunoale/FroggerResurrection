@@ -23,13 +23,25 @@ int out_of_bounds(Item item) {
     }
 }
 
+// Checks if the frog is above a specific crocodile
 int is_frog_above(Item *frog, Item *crocodile) {
     return (frog->line == crocodile->line && 
             frog->column >= crocodile->column &&
             frog->column + frog->dimension <= crocodile->column + crocodile->dimension);
 }
 
-void move_frog(Item *frog, int direction) {
+// Checks if the frog is drawned in a specific flow
+int is_frog_drawned(Item *frog, Flow *flow) { 
+    for (int i = 0; i < flow->how_many_crocodiles; i++) {
+        if (is_frog_above(frog, &flow->crocodiles[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// Move the frog in a specific direction
+void drag_frog(Item *frog, int direction) { // TODO: correggere con i bordi
     switch(direction) {
         case LEFT:  frog->column--; break;
         case RIGHT: frog->column++; break;
@@ -109,11 +121,16 @@ void manche() {
 
         switch (item.type) {
             case FROG:
-                displayFrog(/* TODO */);
-                game.Frog = item;
+                if (is_frog_drawned(&item, &game.flows[item.line])) {
+                    // TODO: finisce la manche perché perde
+                    // TODO: implementare terminazione di tutti i processi
+                } else {
+                    displayItem();
+                    game.Frog = item;
+                }
                 break;
             case CROCODILE:
-                displayCrocodile(/* TODO */);
+                displayItem(/* TODO */);
                 if (out_of_bounds(item)) { 
                     // TODO: implement other functions
                     killTask(&buffer, &item);
@@ -121,8 +138,8 @@ void manche() {
                 }
                 if (is_frog_above(&game.Frog, &item)) {
                     // probabili bug 
-                    move_frog(&game.Frog, item.direction);
-                    displayFrog(/* TODO */);
+                    drag_frog(&game.Frog, item.direction);
+                    displayItem(/* TODO */);
                 }
                 break;
         }
