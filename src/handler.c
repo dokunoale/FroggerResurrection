@@ -17,10 +17,16 @@ int is_edge_free(Flow *flow, int direction) {
 
 int out_of_bounds(Item item) { 
     switch(item.direction) {
-        case LEFT:  return item.column < 0;
-        case RIGHT: return item.column > GAME_WITDH;
+        case LEFT:  return item.column + item.dimension < 0;
+        case RIGHT: return item.column + item.dimension > GAME_WITDH;
         default: return 0;
     }
+}
+
+int is_frog_above(Item *frog, Item *crocodile) {
+    return (frog->line == crocodile->line && 
+            frog->column >= crocodile->column &&
+            frog->column + frog->dimension <= crocodile->column + crocodile->dimension);
 }
 
 void rotate(Flow *flow) { // implements the Flow struct as a queue
@@ -96,13 +102,17 @@ void manche() {
 
         switch (item.type) {
             case FROG:
+                displayFrog(/* TODO */);
                 break;
             case CROCODILE:
+                displayCrocodile(/* TODO */);
                 if (out_of_bounds(item)) { 
-                    displayCrocodile(/* TODO */);
                     // TODO: implement other functions
                     killTask(&buffer, &item);
                     rotate(&game.flows[item.line]);
+                }
+                if (is_frog_above(&game.Frog, &item)) {
+                    move_frog(&game.Frog, item.direction);
                 }
                 break;
         }
