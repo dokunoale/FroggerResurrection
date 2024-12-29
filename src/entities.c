@@ -4,7 +4,6 @@
 #include "display.h"
 #include "handler.h"
 
-
 void frog (Buffer *buffer, Item *item) {
 
     while (TRUE) {

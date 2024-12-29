@@ -18,11 +18,11 @@
 #define GAME_HEIGHT 11
 
 typedef struct{
-    int id;
-    int direction;
-    int speed;
-    Item crocodiles [CROCODILE_MAX_NUM];
-    int croc_in_flow;
+    unsigned int line;
+    unsigned int direction;
+    unsigned int speed;
+    unsigned int how_many_crocodiles;
+    Item crocodiles[CROCODILE_MAX_NUM];
 } Flow;
 
 typedef struct{

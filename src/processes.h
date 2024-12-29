@@ -32,6 +32,7 @@ typedef struct {
     int type;
     unsigned int dimension;
     unsigned int speed;
+    unsigned int direction;
     pid_t id;
 } Item;
 
