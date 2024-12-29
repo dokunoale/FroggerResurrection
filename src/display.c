@@ -3,7 +3,6 @@
  * @brief Contains the functions for the display of the game.
  */
 #include "display.h"
-#include "handler.h"
 
 void initDisplay() {
     initscr();
@@ -20,10 +19,12 @@ void displayItem(WINDOW* win, Item *old, Item *new){
         case FROG:
             mvwaddch(win, old->line, old->column, ' ');
             mvwaddch(win, new->line, new->column, 'R');
+            wrefresh(win);
             break;
         case CROCODILE:
             mvwaddstr(win, old->line, old->column, "   ");
             mvwaddstr(win, new->line, new->column, "CCC");
+            wrefresh(win);
             break;
     }
 }

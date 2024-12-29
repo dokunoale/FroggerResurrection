@@ -1,6 +1,4 @@
 #include "processes.h"
-#include "struct.h" 
-#include "utils.h"
 
 /**
  * @brief Creates a new buffer.
@@ -8,7 +6,7 @@
 Buffer newBuffer() {
     Buffer buffer;
     if (pipe(buffer.pipe_fd) == -1) {
-        perror("pipe call"); endwin(); exit(1);
+        perror("pipe call"); exit(1);
     }
     return buffer;
 }
@@ -21,16 +19,19 @@ Buffer newBuffer() {
  * @param item The item to be passed to the function; contains the process id.
  * @note Defined in processes.h
  */
-void newTask(Buffer* buffer, void (*func)(), Item *item) {
+void newTask(Buffer *buffer, void (*func)(int, Item), Item *item) {
     pid_t pid = fork();
-    if (pid < 0) { _exit(EXIT_FAILURE); } // TODO: error handling
-    if (pid == PID_CHILD) {
+    if (pid < 0) { perror("fork failed"); _exit(EXIT_FAILURE); }
+    if (pid == 0) { // Child process
         close(buffer->pipe_fd[PIPE_READ]);
         item->id = getpid();
         func(buffer->pipe_fd[PIPE_WRITE], *item);
+        close(buffer->pipe_fd[PIPE_WRITE]);
         _exit(EXIT_SUCCESS);
+    } else { // Parent process
+        close(buffer->pipe_fd[PIPE_WRITE]);
+        item->id = pid;
     }
-    item->id = pid;
 }
 
 /**
@@ -40,7 +41,7 @@ void newTask(Buffer* buffer, void (*func)(), Item *item) {
  * @param item The item to be
  * @note Defined in processes.h
  */
-void killTask(Buffer* buffer, Item *item) {
+void killTask(Buffer *buffer, Item *item) {
     close(buffer->pipe_fd[PIPE_WRITE]);
     kill(item->id, SIGKILL);
     waitpid(item->id, NULL, 0);
@@ -55,7 +56,7 @@ void killTask(Buffer* buffer, Item *item) {
  * @note Defined in processes.h
  */
 void writeItem (Buffer* buffer, Item *item) {
-    while(write(buffer->pipe_fd, item, sizeof(Item)) < 0) {
+    while(write(buffer->pipe_fd[PIPE_WRITE], item, sizeof(Item)) < 0) {
         if (errno != EINTR) _exit(EXIT_FAILURE);
     }
 }
@@ -69,8 +70,11 @@ void writeItem (Buffer* buffer, Item *item) {
  * @note Defined in processes.h
  */
 void readItem (Buffer* buffer, Item *item) {
-    while( read(buffer->pipe_fd, item, sizeof(Item)) < 0 ) {
-        if (errno != EINTR) _exit(EXIT_FAILURE);
-    }
+    ssize_t bytesRead;
+    do {
+        bytesRead = read(buffer->pipe_fd[PIPE_READ], item, sizeof(Item));
+        if (bytesRead < 0) perror("Errore nella lettura dalla pipe"); break;
+        usleep(1000);
+    } while (bytesRead == 0);
 }
 

@@ -1,14 +1,12 @@
-#include "utils.h"
-#include "struct.h"
 #include "handler.h"
-#include "display.h"
-#include "entities.h"
+
+int choose(int min, int max) { return rand() % (max - min + 1) + min; }
 
 int direction(int line, int first) { return first ? line % 2 : (line + 1) % 2; }
 
 int is_flow_full(Flow *flow) { return flow->how_many_crocodiles >= CROCODILE_MAX_NUM; }
 
-int is_edge_free(Flow *flow, int direction) { 
+int is_edge_free(Flow *flow, unsigned int direction) { 
     switch(direction) {
         case LEFT:  return flow->how_many_crocodiles == 0 || flow->crocodiles[flow->how_many_crocodiles - 1].column + CROCODILE_DIM < GAME_WITDH; 
         case RIGHT: return flow->how_many_crocodiles == 0 || flow->crocodiles[flow->how_many_crocodiles - 1].column - CROCODILE_DIM > 0;
@@ -33,7 +31,7 @@ int is_frog_above(Item *frog, Item *crocodile) {
 
 // Checks if the frog is drawned in a specific flow
 int is_frog_drawned(Item *frog, Flow *flow) { 
-    for (int i = 0; i < flow->how_many_crocodiles; i++) {
+    for (unsigned int i = 0; i < flow->how_many_crocodiles; i++) {
         if (is_frog_above(frog, &flow->crocodiles[i])) {
             return 0;
         }
@@ -42,7 +40,7 @@ int is_frog_drawned(Item *frog, Flow *flow) {
 }
 
 Item *get_crocodile(Flow *flow, Item *new) {
-    for (int i = 0; i < flow->how_many_crocodiles; i++) {
+    for (unsigned int i = 0; i < flow->how_many_crocodiles; i++) {
         if (flow->crocodiles[i].id == new->id) {
             return &flow->crocodiles[i];
         }
@@ -60,7 +58,7 @@ void drag_frog(Item *frog, int direction) {
 
 // implements the Flow struct as a queue
 void rotate(Flow *flow) { 
-    for (int i = 0; i < flow->how_many_crocodiles - 1; i++) {
+    for (unsigned int i = 0; i < flow->how_many_crocodiles - 1; i++) {
         flow->crocodiles[i] = flow->crocodiles[i + 1];
     }
     flow->how_many_crocodiles--;
@@ -76,9 +74,9 @@ Game new_manche() {
         .dimension = FROG_DIM,
         .speed = 0,
         .direction = 0,
-        .id = NULL
+        .id = 0
     };
-    
+
     int draw = choose(LEFT, RIGHT); 
     for (int i=0; i < NUM_FLOWS; i++) {
         game.flows[i].line = i; 
@@ -92,12 +90,12 @@ Game new_manche() {
 
 // Ends the manche by killing all the processes
 void end_manche(Game *game, Buffer *buffer) {
-    for (int i=0; i < NUM_FLOWS; i++) {
-        for (int j=0; j < game->flows[i].how_many_crocodiles; j++) {
-            killTask(&buffer, &game->flows[i].crocodiles[j]);
+    for (unsigned int i=0; i < NUM_FLOWS; i++) {
+        for (unsigned int j=0; j < game->flows[i].how_many_crocodiles; j++) {
+            killTask(buffer, &game->flows[i].crocodiles[j]);
         }
     }
-    killTask(&buffer, &game->Frog);
+    killTask(buffer, &game->Frog);
 }
 
 /**
@@ -108,8 +106,8 @@ void end_manche(Game *game, Buffer *buffer) {
  * @note Defined in handler.h
  */
 void newCrocodiles(Game *game, Buffer *buffer) {
-    for (int i=0; i < NUM_FLOWS; i++) {
-        if (!is_flow_full(&game->flows[i] && is_edge_free(&game->flows[i], game->flows[i].direction))) {
+    for (unsigned int i=0; i < NUM_FLOWS; i++) {
+        if (!is_flow_full(&game->flows[i]) && is_edge_free(&game->flows[i], game->flows[i].direction)) {
             if (choose(1, PROBABILITY) == 1) {
                 game->flows[i].crocodiles[game->flows[i].how_many_crocodiles] = (Item){
                     .line = i,
@@ -118,7 +116,7 @@ void newCrocodiles(Game *game, Buffer *buffer) {
                     .dimension = CROCODILE_DIM,
                     .speed = game->flows[i].speed,
                     .direction = game->flows[i].direction,
-                    .id = NULL
+                    .id = 0
                 };
                 game->flows[i].how_many_crocodiles++;
                 newTask(buffer, &crocodile, &game->flows[i].crocodiles[game->flows[i].how_many_crocodiles - 1]);
@@ -135,21 +133,36 @@ void newCrocodiles(Game *game, Buffer *buffer) {
  * @note Defined in handler.h
  */
 void manche(WINDOW *game_win) {
+
+    mvwaddnstr(game_win, 0, 0, "Manche", 20);
+    wrefresh(game_win);
+    sleep(1);
+
     Buffer buffer = newBuffer();
     Game game = new_manche();
     newTask(&buffer, &frog, &game.Frog);
 
-    while (1) {
+    while (TRUE) {
+
+        mvwaddnstr(game_win, 1, 0, "ciclo", 20);
+        wrefresh(game_win);
+        sleep(1);
+
         Item item;
         readItem(&buffer, &item);
         newCrocodiles(&game, &buffer);
 
         switch (item.type) {
+            case EXIT:
+                end_manche(&game, &buffer);
+                return;
             case FROG:
-                if (is_frog_drawned(&item, &game.flows[item.line])) {
+                if (item.line != GAME_HEIGHT - 1 && FALSE) {
+                    if (is_frog_drawned(&item, &game.flows[item.line])) {
                     end_manche(&game, &buffer);
                     // TODO: implement other functions
                     return;
+                    }
                 } else {
                     displayItem(game_win, &game.Frog, &item);
                     game.Frog = item;
@@ -169,8 +182,3 @@ void manche(WINDOW *game_win) {
         }
     }
 }
-
-
-
-
-
