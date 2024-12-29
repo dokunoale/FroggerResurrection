@@ -29,6 +29,13 @@ int is_frog_above(Item *frog, Item *crocodile) {
             frog->column + frog->dimension <= crocodile->column + crocodile->dimension);
 }
 
+void move_frog(Item *frog, int direction) {
+    switch(direction) {
+        case LEFT:  frog->column--; break;
+        case RIGHT: frog->column++; break;
+    }
+}
+
 void rotate(Flow *flow) { // implements the Flow struct as a queue
     for (int i = 0; i < flow->how_many_crocodiles - 1; i++) {
         flow->crocodiles[i] = flow->crocodiles[i + 1];
@@ -103,6 +110,7 @@ void manche() {
         switch (item.type) {
             case FROG:
                 displayFrog(/* TODO */);
+                game.Frog = item;
                 break;
             case CROCODILE:
                 displayCrocodile(/* TODO */);
@@ -112,7 +120,9 @@ void manche() {
                     rotate(&game.flows[item.line]);
                 }
                 if (is_frog_above(&game.Frog, &item)) {
+                    // probabili bug 
                     move_frog(&game.Frog, item.direction);
+                    displayFrog(/* TODO */);
                 }
                 break;
         }
