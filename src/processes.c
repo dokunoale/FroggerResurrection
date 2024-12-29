@@ -19,13 +19,13 @@ Buffer newBuffer() {
  * @param item The item to be passed to the function; contains the process id.
  * @note Defined in processes.h
  */
-void newTask(Buffer *buffer, void (*func)(int, Item), Item *item) {
+void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
     pid_t pid = fork();
     if (pid < 0) { perror("fork failed"); _exit(EXIT_FAILURE); }
     if (pid == 0) { // Child process
         close(buffer->pipe_fd[PIPE_READ]);
         item->id = getpid();
-        func(buffer->pipe_fd[PIPE_WRITE], *item);
+        func(*buffer, *item);
         close(buffer->pipe_fd[PIPE_WRITE]);
         _exit(EXIT_SUCCESS);
     } else { // Parent process
@@ -55,10 +55,8 @@ void killTask(Buffer *buffer, Item *item) {
  * 
  * @note Defined in processes.h
  */
-void writeItem (Buffer* buffer, Item *item) {
-    while(write(buffer->pipe_fd[PIPE_WRITE], item, sizeof(Item)) < 0) {
-        if (errno != EINTR) _exit(EXIT_FAILURE);
-    }
+void writeItem (Buffer *buffer, Item *item) {
+    write(buffer->pipe_fd[PIPE_WRITE], item, sizeof(Item));
 }
 
 /**
@@ -69,7 +67,7 @@ void writeItem (Buffer* buffer, Item *item) {
  * 
  * @note Defined in processes.h
  */
-void readItem (Buffer* buffer, Item *item) {
+void readItem (Buffer *buffer, Item *item) {
     ssize_t bytesRead;
     do {
         bytesRead = read(buffer->pipe_fd[PIPE_READ], item, sizeof(Item));

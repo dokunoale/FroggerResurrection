@@ -68,7 +68,7 @@ void rotate(Flow *flow) {
 Game new_manche() {
     Game game;
     game.Frog = (Item){
-        .line = GAME_HEIGHT - 1,
+        .line = GAME_HEIGHT - 2,
         .column = GAME_WITDH / 2,
         .type = FROG,
         .dimension = FROG_DIM,
@@ -109,17 +109,18 @@ void newCrocodiles(Game *game, Buffer *buffer) {
     for (unsigned int i=0; i < NUM_FLOWS; i++) {
         if (!is_flow_full(&game->flows[i]) && is_edge_free(&game->flows[i], game->flows[i].direction)) {
             if (choose(1, PROBABILITY) == 1) {
-                game->flows[i].crocodiles[game->flows[i].how_many_crocodiles] = (Item){
+                Item new_croc = (Item){
                     .line = i,
-                    .column = GAME_WITDH - 1,
+                    .column = game->flows[i].direction ? GAME_WITDH : 0,
                     .type = CROCODILE,
                     .dimension = CROCODILE_DIM,
                     .speed = game->flows[i].speed,
                     .direction = game->flows[i].direction,
                     .id = 0
                 };
+                game->flows[i].crocodiles[game->flows[i].how_many_crocodiles] = new_croc;
                 game->flows[i].how_many_crocodiles++;
-                newTask(buffer, &crocodile, &game->flows[i].crocodiles[game->flows[i].how_many_crocodiles - 1]);
+                newTask(buffer, &crocodile, &new_croc);
             }
         }
     }
@@ -134,22 +135,20 @@ void newCrocodiles(Game *game, Buffer *buffer) {
  */
 void manche(WINDOW *game_win) {
 
-    mvwaddnstr(game_win, 0, 0, "Manche", 20);
     wrefresh(game_win);
-    sleep(1);
 
     Buffer buffer = newBuffer();
     Game game = new_manche();
     newTask(&buffer, &frog, &game.Frog);
 
+    int counter = 0;
     while (TRUE) {
-
-        mvwaddnstr(game_win, 1, 0, "ciclo", 20);
         wrefresh(game_win);
-        sleep(1);
+        counter++;
 
         Item item;
         readItem(&buffer, &item);
+        mvwprintw(game_win, 1, 1, "item.type: %d - counter %d ", item.type, counter);
         newCrocodiles(&game, &buffer);
 
         switch (item.type) {

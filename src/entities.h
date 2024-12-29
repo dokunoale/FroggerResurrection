@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-void frog(Buffer *buffer, Item *item);
-void crocodile(Buffer *buffer, Item *item, Game *game);
+void frog(Buffer buffer, Item item);
+void crocodile(Buffer buffer, Item item);
 
 #endif // #ENTITIES_H

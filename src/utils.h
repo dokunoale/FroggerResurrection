@@ -4,7 +4,7 @@
 #include <ncurses.h>
 #include "processes.h"
 
-#define USLEEP 10000
+#define USLEEP 100000
 
 #define NUM_FLOWS 8
 #define RIGHT 1
@@ -13,7 +13,7 @@
 #define CROCODILE_MAX_NUM 5
 #define MIN_SPEED 8
 #define MAX_SPEED 2
-#define GAME_WITDH 15
+#define GAME_WITDH 15 * 2
 #define GAME_HEIGHT 11
 
 #define FROG 0

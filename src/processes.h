@@ -44,7 +44,7 @@ typedef struct {
 #define PIPE_WRITE 1
 
 Buffer newBuffer();
-void newTask(Buffer *buffer, void (*func)(), Item *item);
+void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item);
 void killTask(Buffer *buffer, Item *item);
 void writeItem (Buffer *buffer, Item *item);
 void readItem (Buffer *buffer, Item *item);
