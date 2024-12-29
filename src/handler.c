@@ -5,6 +5,36 @@
 
 int direction(int line, int first) { return first ? line % 2 : (line + 1) % 2; }
 
+int is_flow_full(Flow *flow) { return flow->how_many_crocodiles >= CROCODILE_MAX_NUM; }
+
+int is_edge_free(Flow *flow, int direction) { 
+    switch(direction) {
+        case LEFT:  return flow->how_many_crocodiles == 0 || flow->crocodiles[flow->how_many_crocodiles - 1].column + CROCODILE_DIM < GAME_WITDH; 
+        case RIGHT: return flow->how_many_crocodiles == 0 || flow->crocodiles[flow->how_many_crocodiles - 1].column - CROCODILE_DIM > 0;
+        default: return 0;
+    }
+}
+
+int out_of_bounds(Item item) { 
+    switch(item.direction) {
+        case LEFT:  return item.column < 0;
+        case RIGHT: return item.column > GAME_WITDH;
+        default: return 0;
+    }
+}
+
+void rotate(Flow *flow) { // implements the Flow struct as a queue
+    for (int i = 0; i < flow->how_many_crocodiles - 1; i++) {
+        flow->crocodiles[i] = flow->crocodiles[i + 1];
+    }
+    flow->how_many_crocodiles--;
+}
+
+/**
+ * Initializes a new Game struct.
+ * 
+ * @note Defined in handler.h
+ */
 Game newGame() {
     Game game;
     game.Frog = (Item){10, 7, FROG, FROG_DIM};
@@ -20,48 +50,40 @@ Game newGame() {
     return game;
 }
 
-void newCrocodile(Game *game, Buffer *buffer, int direction) {
-    // todo: implement the newCrocodile function
-}
-
+/**
+ * Generates new crocodiles if all the conditions are met.
+ * 
+ * @param game The game struct.
+ * @param buffer The buffer struct.
+ * @note Defined in handler.h
+ */
 void newCrocodiles(Game *game, Buffer *buffer) {
-    for (int i=0; i < NUM_FLOWS; i++) { // for each flow
-        if (game->flows[i].how_many_crocodiles < CROCODILE_MAX_NUM) {
-            Item *crocodiles = game->flows[i].crocodiles;
-            Item last_crocodile = crocodiles[game->flows[i].how_many_crocodiles - 1];
-
-            switch(game->flows[i].direction) {
-                case LEFT:
-                    if (last_crocodile.column + CROCODILE_DIM < GAME_WITDH && choose(1, PROBABILITY) == 1) {
-                        crocodiles[game->flows[i].how_many_crocodiles] = (Item){
-                            .line = i,
-                            .column = GAME_WITDH - 1,
-                            .type = CROCODILE,
-                            .dimension = CROCODILE_DIM,
-                            .speed = game->flows[i].speed,
-                            .direction = LEFT,
-                            .id = NULL
-                        };
-                        game->flows[i].how_many_crocodiles++;
-                        newTask(buffer, &crocodile, &crocodiles[game->flows[i].how_many_crocodiles - 1]);
-                    }
-                    break;
-                case RIGHT:
-                    // todo: implement the right direction
-                    break;
+    for (int i=0; i < NUM_FLOWS; i++) {
+        if (!is_flow_full(&game->flows[i] && is_edge_free(&game->flows[i], game->flows[i].direction))) {
+            if (choose(1, PROBABILITY) == 1) {
+                game->flows[i].crocodiles[game->flows[i].how_many_crocodiles] = (Item){
+                    .line = i,
+                    .column = GAME_WITDH - 1,
+                    .type = CROCODILE,
+                    .dimension = CROCODILE_DIM,
+                    .speed = game->flows[i].speed,
+                    .direction = game->flows[i].direction,
+                    .id = NULL
+                };
+                game->flows[i].how_many_crocodiles++;
+                newTask(buffer, &crocodile, &game->flows[i].crocodiles[game->flows[i].how_many_crocodiles - 1]);
             }
         }
     }
 }
 
-// implements the Flow struct as a queue
-void rotate(Flow *flow) {
-    for (int i = 0; i < flow->croc_in_flow - 1; i++) {
-        flow->crocodiles[i] = flow->crocodiles[i + 1];
-    }
-    flow->croc_in_flow--;
-}
-
+/**
+ * Manages the game.
+ * Checks for collisions and out of bounds crocodiles.
+ * Updates the screen accordingly.
+ * 
+ * @note Defined in handler.h
+ */
 void manche() {
     Buffer buffer = newBuffer();
     Game game = newGame();
@@ -76,9 +98,9 @@ void manche() {
             case FROG:
                 break;
             case CROCODILE:
-                if out_of_bounds(item) { 
-                    // TODO: implement the out_of_bounds function
-                    // remove the crocodile
+                if (out_of_bounds(item)) { 
+                    displayCrocodile(/* TODO */);
+                    // TODO: implement other functions
                     killTask(&buffer, &item);
                     rotate(&game.flows[item.line]);
                 }
