@@ -10,7 +10,13 @@
 #define WIN_MAIN_WIDTH 15 * 2
 
 #include <ncurses.h>
+#include "display.h"
+#include "processes.h"
+#include "handler.h"
 
 void initDisplay();
+WINDOW* initWindow();
+void displayEntity(WINDOW* main_win, Item old_item, Item new_item);
+
 
 #endif // DISPLAY_H
