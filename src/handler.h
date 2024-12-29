@@ -13,7 +13,14 @@
 #define GAME_WITDH 15
 #define GAME_HEIGHT 11
 
-typedef struct{
+/**
+ * @param line The line of the flow.
+ * @param direction The direction of the flow: LEFT or RIGHT.
+ * @param speed The speed of the flow.
+ * @param how_many_crocodiles The number of crocodiles in the flow.
+ * @param crocodiles An array of crocodiles of type Item.
+ */
+typedef struct {
     unsigned int line;
     unsigned int direction;
     unsigned int speed;
@@ -21,13 +28,15 @@ typedef struct{
     Item crocodiles[CROCODILE_MAX_NUM];
 } Flow;
 
-typedef struct{
+/**
+ * @param flow An array of flows.
+ * @param frog The frog item.
+ */
+typedef struct {
     Flow flows[NUM_FLOWS];
     Item Frog;
 } Game;
 
-Game newGame();
-void newCrocodiles(Game *game, Buffer *buffer);
-void manche();
+void manche(WINDOW *game_win);
 
 #endif //HANDLER_H

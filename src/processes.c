@@ -69,8 +69,6 @@ void writeItem (Buffer* buffer, Item *item) {
  * @note Defined in processes.h
  */
 void readItem (Buffer* buffer, Item *item) {
-    Item item;
-    // while there is no item to read
     while( read(buffer->pipe_fd, item, sizeof(Item)) < 0 ) {
         if (errno != EINTR) _exit(EXIT_FAILURE);
     }

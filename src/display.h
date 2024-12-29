@@ -15,8 +15,7 @@
 #include "handler.h"
 
 void initDisplay();
-WINDOW* initWindow();
-void displayItem(WINDOW* main_win, Item old_item, Item new_item);
+void displayItem(WINDOW *win, Item *old, Item *new);
 
 
 #endif // DISPLAY_H
