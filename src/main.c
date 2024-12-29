@@ -1,18 +1,22 @@
 #include "processes.h"
+
 #include "display.h"
+
 #include <unistd.h>
+
+#include "handler.h"
+
+
 
 int main() {
 
     initDisplay();
-
-    WINDOW *main_win = newwin(WIN_MAIN_HEIGHT, WIN_MAIN_WIDTH, 0, 0);
-    box(main_win, 0, 0);
-    wrefresh(main_win);
-
+    WINDOW* main_win = initWindow();
     sleep(5);
 
+    manche(main_win);
+
     endwin();
-    
     return 0;
+
 }
