@@ -15,7 +15,7 @@ void initDisplay() {
 }
 
 void displayItem(WINDOW* win, Item *old, Item *new){
-    switch (old->type) {
+    switch (new->type) {
         case FROG:
             mvwaddch(win, old->line, old->column, ' ');
             mvwaddch(win, new->line, new->column, 'R');

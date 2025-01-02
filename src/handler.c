@@ -155,10 +155,11 @@ void manche(WINDOW *game_win) {
         wrefresh(game_win);
 
         Item item;
-        readItem(&buffer, &item, MAIN_PIPE);
         newCrocodiles(&game, &buffer);
-
-        mvwaddnstr(game_win, 0, 0, "type read: %d", item.type);
+        readItem(&buffer, &item, MAIN_PIPE);
+        
+        mvwprintw(game_win, 0, 0, "Read -> %d", item.type);
+        wrefresh(game_win);
 
         switch (item.type) {
             case EXIT:
@@ -175,7 +176,10 @@ void manche(WINDOW *game_win) {
                         return;
                     }
                 }
+                break;
             case CROCODILE:
+                mvwprintw(game_win, 1, 0, "read croc -> %d", item.type);
+                wrefresh(game_win);
                 update_crocodile(&game.flows[item.line], &item);
                 displayItem(game_win, get_crocodile(&game.flows[item.line], &item), &item);
                 if (out_of_bounds(item)) { 

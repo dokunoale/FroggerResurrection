@@ -5,12 +5,15 @@
  */
 Buffer newBuffer() {
     Buffer buffer;
-    if (pipe(buffer.main_pipe_fd) == -1) {
-        perror("pipe call"); exit(1);
+    if (pipe(buffer.main_pipe_fd) == -1) { perror("pipe call"); _exit(1); }
+    if (pipe(buffer.reverse_pipe_fd) == -1) { perror("pipe call"); _exit(1); }
+
+    int flags = fcntl(buffer.reverse_pipe_fd[PIPE_READ], F_GETFL);
+    if (flags == -1) { perror("Errore durante il recupero dei flag della REVERSE_PIPE"); _exit(1); }
+    if (fcntl(buffer.reverse_pipe_fd[PIPE_READ], F_SETFL, flags | O_NONBLOCK) == -1) { 
+        perror("Errore durante la configurazione della REVERSE_PIPE come non bloccante"); _exit(1);
     }
-    if (pipe(buffer.reverse_pipe_fd) == -1) {
-        perror("pipe call"); exit(1);
-    }
+
     return buffer;
 }
 
@@ -81,33 +84,43 @@ void writeItem (Buffer *buffer, Item *item, int pipe) {
  * 
  * @note Defined in processes.h
  */
-void readItem (Buffer *buffer, Item *item, int pipe) {
+void readItem(Buffer *buffer, Item *item, int pipe) {
     ssize_t bytesRead;
     Item item_read;
+
     switch (pipe) {
         case MAIN_PIPE:
+            // Lettura bloccante, continua finché non legge un Item
             do {
                 bytesRead = read(buffer->main_pipe_fd[PIPE_READ], &item_read, sizeof(Item));
                 if (bytesRead == sizeof(Item)) {
                     *item = item_read;
-                    break;
+                    break; // Uscita dal ciclo se ha letto correttamente
                 } else if (bytesRead < 0) {
-                    perror("Errore nella lettura dalla pipe");
+                    perror("Errore nella lettura dalla MAIN_PIPE");
                     break;
                 }
+                // Attesa breve per evitare di occupare la CPU
                 usleep(1000);
             } while (bytesRead == 0);
             break;
-        case REVERSE_PIPE:
+
+        case REVERSE_PIPE: {
+            // Prova a leggere una sola volta
             bytesRead = read(buffer->reverse_pipe_fd[PIPE_READ], &item_read, sizeof(Item));
             if (bytesRead == sizeof(Item)) {
-                *item = item_read;
+                *item = item_read; // Lettura riuscita
             } else if (bytesRead < 0) {
-                perror("Errore nella lettura dalla pipe");
+                if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                    perror("Errore nella lettura dalla REVERSE_PIPE");
+                }
+                // Se errno è EAGAIN o EWOULDBLOCK, non c'è nulla da leggere: procediamo
             }
             break;
+        }
+
         default:
-            perror("Invalid pipe specified\n");
+            fprintf(stderr, "Invalid pipe specified\n");
             return;
     }
 }
