@@ -1,4 +1,5 @@
 #include "handler.h"
+#define ITEM_INDEX (item.line -2)
 
 int choose(int min, int max) { return rand() % (max - min + 1) + min; }
 
@@ -16,8 +17,8 @@ int is_edge_free(Flow *flow, unsigned int direction) {
 
 int out_of_bounds(Item item) { 
     switch(item.direction) {
-        case LEFT:  return item.column + item.dimension <= 0;
-        case RIGHT: return item.column >= GAME_WITDH - 1;
+        case LEFT:  return item.column + item.dimension < 0;
+        case RIGHT: return item.column > GAME_WITDH - 1;
         default: return 0;
     }
 }
@@ -118,10 +119,10 @@ void newCrocodiles(Game *game, Buffer *buffer) {
     // for each flow
     for (unsigned int i=0; i < NUM_FLOWS; i++) {
         if (!is_flow_full(&game->flows[i]) && is_edge_free(&game->flows[i], game->flows[i].direction)) {
-            if (choose(1, PROBABILITY) == 1) {
+            if (1) { // choose(1, PROBABILITY) == 1 // TODO: implement probability
                 Item new_croc = (Item){
                     .line = i + 2,
-                    .column = game->flows[i].direction ? -CROCODILE_DIM : GAME_WITDH - 1,
+                    .column = game->flows[i].direction ? 5 : 6, // -CROCODILE_DIM + 1 : GAME_WITDH - 2, 
                     .type = CROCODILE,
                     .dimension = CROCODILE_DIM,
                     .speed = game->flows[i].speed,
@@ -155,10 +156,22 @@ void manche(WINDOW *game_win) {
         wrefresh(game_win);
 
         Item item;
-        newCrocodiles(&game, &buffer);
+        // newCrocodiles(&game, &buffer);
+
+        Item tempitem = (Item){
+                .line = 3,
+                .column = 2,
+                .type = CROCODILE,
+                .dimension = CROCODILE_DIM,
+                .speed = 1,
+                .direction = RIGHT,
+                .id = 0
+            };
+        newTask(&buffer, &crocodile, &tempitem);
+
         readItem(&buffer, &item, MAIN_PIPE);
-        
-        mvwprintw(game_win, 0, 0, "Read -> %d", item.type);
+
+        mvwprintw(game_win, 0, 0, "read -> %d", item.type);
         wrefresh(game_win);
 
         switch (item.type) {
@@ -170,7 +183,7 @@ void manche(WINDOW *game_win) {
                 game.Frog = item;
 
                 if (item.line != GAME_HEIGHT - 1) {
-                    if (is_frog_drawned(&item, &game.flows[item.line])) {
+                    if (is_frog_drawned(&item, &game.flows[ITEM_INDEX])) {
                         end_manche(&game, &buffer);
                         // TODO: implement other functions
                         return;
@@ -180,13 +193,15 @@ void manche(WINDOW *game_win) {
             case CROCODILE:
                 mvwprintw(game_win, 1, 0, "read croc -> %d", item.type);
                 wrefresh(game_win);
-                update_crocodile(&game.flows[item.line], &item);
-                displayItem(game_win, get_crocodile(&game.flows[item.line], &item), &item);
+
+                update_crocodile(&game.flows[ITEM_INDEX], &item);
+                displayItem(game_win, get_crocodile(&game.flows[ITEM_INDEX], &item), &item);
+
                 if (out_of_bounds(item)) { 
                     killTask(&buffer, &item);
-                    rotate(&game.flows[item.line]);
+                    rotate(&game.flows[ITEM_INDEX]);
                 }
-                if (is_frog_above(&game.Frog, &item)) {
+                if (is_frog_above(&game.Frog, &item) && 0) {
                     drag_frog(&game.Frog, item.direction);
                     writeItem(&buffer, &game.Frog, REVERSE_PIPE);
                     displayItem(game_win, &game.Frog, &item);

@@ -36,7 +36,7 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
     } else { // Parent process
         close(buffer->main_pipe_fd[PIPE_WRITE]);
         close(buffer->reverse_pipe_fd[PIPE_READ]);
-        item->id = pid;
+        item->id = pid; 
     }
 }
 
@@ -120,7 +120,7 @@ void readItem(Buffer *buffer, Item *item, int pipe) {
         }
 
         default:
-            fprintf(stderr, "Invalid pipe specified\n");
+            perror("Invalid pipe specified\n");
             return;
     }
 }

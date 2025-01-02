@@ -4,7 +4,7 @@
 #include <ncurses.h>
 #include "processes.h"
 
-#define USLEEP 100000
+#define USLEEP 10000
 
 // Ncurses constants
 #define NO_CURSOR 0

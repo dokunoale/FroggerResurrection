@@ -15,13 +15,13 @@ void frog (Buffer buffer, Item item) {
     }
 }
 
-void crocodile (Buffer buffer, Item crocodile) {
+void crocodile (Buffer buffer, Item item) {
     while(TRUE){
-        switch(crocodile.direction) {
-            case RIGHT: crocodile.column += 1; break;
-            case LEFT:  crocodile.column -= 1; break;
+        switch(item.direction) {
+            case RIGHT: item.column += 1; break;
+            case LEFT:  item.column -= 1; break;
         }
-        writeItem(&buffer, &crocodile, MAIN_PIPE);
-        usleep(crocodile.speed * USLEEP);
+        writeItem(&buffer, &item, MAIN_PIPE);
+        usleep(item.speed * USLEEP);
     }
 }
