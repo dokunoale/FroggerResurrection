@@ -5,7 +5,10 @@
  */
 Buffer newBuffer() {
     Buffer buffer;
-    if (pipe(buffer.pipe_fd) == -1) {
+    if (pipe(buffer.main_pipe_fd) == -1) {
+        perror("pipe call"); exit(1);
+    }
+    if (pipe(buffer.reverse_pipe_fd) == -1) {
         perror("pipe call"); exit(1);
     }
     return buffer;
@@ -23,13 +26,13 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
     pid_t pid = fork();
     if (pid < 0) { perror("fork failed"); _exit(EXIT_FAILURE); }
     if (pid == 0) { // Child process
-        close(buffer->pipe_fd[PIPE_READ]);
-        item->id = getpid();
-        func(*buffer, *item);
-        close(buffer->pipe_fd[PIPE_WRITE]);
+        close(buffer->main_pipe_fd[PIPE_READ]); close(buffer->reverse_pipe_fd[PIPE_WRITE]);
+        item->id = getpid(); func(*buffer, *item);
+        close(buffer->main_pipe_fd[PIPE_WRITE]); close(buffer->reverse_pipe_fd[PIPE_READ]);
         _exit(EXIT_SUCCESS);
     } else { // Parent process
-        close(buffer->pipe_fd[PIPE_WRITE]);
+        close(buffer->main_pipe_fd[PIPE_WRITE]);
+        close(buffer->reverse_pipe_fd[PIPE_READ]);
         item->id = pid;
     }
 }
@@ -42,7 +45,8 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
  * @note Defined in processes.h
  */
 void killTask(Buffer *buffer, Item *item) {
-    close(buffer->pipe_fd[PIPE_WRITE]);
+    close(buffer->main_pipe_fd[PIPE_WRITE]);
+    close(buffer->reverse_pipe_fd[PIPE_READ]);
     kill(item->id, SIGKILL);
     waitpid(item->id, NULL, 0);
 }
@@ -55,8 +59,18 @@ void killTask(Buffer *buffer, Item *item) {
  * 
  * @note Defined in processes.h
  */
-void writeItem (Buffer *buffer, Item *item) {
-    write(buffer->pipe_fd[PIPE_WRITE], item, sizeof(Item));
+void writeItem (Buffer *buffer, Item *item, int pipe) {
+    switch (pipe) {
+        case MAIN_PIPE:
+            write(buffer->main_pipe_fd[PIPE_WRITE], item, sizeof(Item));
+            break;
+        case REVERSE_PIPE:
+            write(buffer->reverse_pipe_fd[PIPE_WRITE], item, sizeof(Item));
+            break;
+        default:
+            perror("Invalid pipe specified\n");
+            break;
+    }
 }
 
 /**
@@ -67,12 +81,34 @@ void writeItem (Buffer *buffer, Item *item) {
  * 
  * @note Defined in processes.h
  */
-void readItem (Buffer *buffer, Item *item) {
+void readItem (Buffer *buffer, Item *item, int pipe) {
     ssize_t bytesRead;
-    do {
-        bytesRead = read(buffer->pipe_fd[PIPE_READ], item, sizeof(Item));
-        if (bytesRead < 0) perror("Errore nella lettura dalla pipe"); break;
-        usleep(1000);
-    } while (bytesRead == 0);
+    Item item_read;
+    switch (pipe) {
+        case MAIN_PIPE:
+            do {
+                bytesRead = read(buffer->main_pipe_fd[PIPE_READ], &item_read, sizeof(Item));
+                if (bytesRead == sizeof(Item)) {
+                    *item = item_read;
+                    break;
+                } else if (bytesRead < 0) {
+                    perror("Errore nella lettura dalla pipe");
+                    break;
+                }
+                usleep(1000);
+            } while (bytesRead == 0);
+            break;
+        case REVERSE_PIPE:
+            bytesRead = read(buffer->reverse_pipe_fd[PIPE_READ], &item_read, sizeof(Item));
+            if (bytesRead == sizeof(Item)) {
+                *item = item_read;
+            } else if (bytesRead < 0) {
+                perror("Errore nella lettura dalla pipe");
+            }
+            break;
+        default:
+            perror("Invalid pipe specified\n");
+            return;
+    }
 }
 

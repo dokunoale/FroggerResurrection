@@ -18,7 +18,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lncurses
+	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lncurses -g
 	rm -rf $(OBJ_DIR)/*
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c

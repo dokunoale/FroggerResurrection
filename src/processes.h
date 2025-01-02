@@ -15,8 +15,8 @@ typedef struct {
 } PidList;
 
 typedef struct {
-    int pipe_fd[2];
-    PidList *pid_list;
+    int main_pipe_fd[2];
+    int reverse_pipe_fd[2];
 } Buffer;
 
 /**
@@ -43,10 +43,12 @@ typedef struct {
 #define PIPE_READ 0
 #define PIPE_WRITE 1
 
+enum { MAIN_PIPE, REVERSE_PIPE };
+
 Buffer newBuffer();
 void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item);
 void killTask(Buffer *buffer, Item *item);
-void writeItem (Buffer *buffer, Item *item);
-void readItem (Buffer *buffer, Item *item);
+void writeItem (Buffer *buffer, Item *item, int pipe);
+void readItem (Buffer *buffer, Item *item, int pipe);
 
 #endif // PROCESSES_H

@@ -6,15 +6,26 @@
 
 #define USLEEP 100000
 
-#define NUM_FLOWS 8
+// Ncurses constants
+#define NO_CURSOR 0
+#define CURSOR 1
+
+// Screen size for each window
+#define WIN_MAIN_HEIGHT 13
+#define WIN_MAIN_WIDTH 15 * 2
+
+// directions
 #define RIGHT 1
 #define LEFT 0
+
+#define NUM_FLOWS 8
 #define PROBABILITY 5 // Probabilità di generare un coccodrillo 
 #define CROCODILE_MAX_NUM 5
 #define MIN_SPEED 8
 #define MAX_SPEED 2
+
+#define GAME_HEIGHT 12
 #define GAME_WITDH 15 * 2
-#define GAME_HEIGHT 11
 
 #define FROG 0
 #define CROCODILE 1

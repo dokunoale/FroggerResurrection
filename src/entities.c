@@ -2,6 +2,7 @@
 
 void frog (Buffer buffer, Item item) {
     while (TRUE) {
+        readItem(&buffer, &item, REVERSE_PIPE);
         int c = getch();
         switch (c) {
             case 'q': item.type = EXIT; break;
@@ -10,7 +11,7 @@ void frog (Buffer buffer, Item item) {
             case KEY_RIGHT: if (item.column < GAME_WITDH - 3) item.column += 1; break;
             case KEY_LEFT: if (item.column > 2)  item.column-= 1; break;
         }
-        writeItem(&buffer, &item);
+        writeItem(&buffer, &item, MAIN_PIPE);
     }
 }
 
@@ -20,8 +21,7 @@ void crocodile (Buffer buffer, Item crocodile) {
             case RIGHT: crocodile.column += 1; break;
             case LEFT:  crocodile.column -= 1; break;
         }
-        writeItem(&buffer, &crocodile);
+        writeItem(&buffer, &crocodile, MAIN_PIPE);
         usleep(crocodile.speed * USLEEP);
-        break;
     }
 }
