@@ -1,12 +1,16 @@
 #include "handler.h"
 #define ITEM_INDEX (item.line -2)
 
+// Returns a random number between min and max
 int choose(int min, int max) { return rand() % (max - min + 1) + min; }
 
+// Returns the direction of the flow
 int direction(int line, int dir) { return dir ? line % 2 : (line + 1) % 2; }
 
+// Checks if the flow is full
 int is_flow_full(Flow *flow) { return flow->how_many_crocodiles >= CROCODILE_MAX_NUM; }
 
+// Checks if the edge is free
 int is_edge_free(Flow *flow, unsigned int direction) { 
     switch(direction) {
         case LEFT:  return flow->how_many_crocodiles == 0 || flow->crocodiles[flow->how_many_crocodiles - 1].column + CROCODILE_DIM < GAME_WITDH - 1; 
@@ -15,6 +19,7 @@ int is_edge_free(Flow *flow, unsigned int direction) {
     }
 }
 
+// Checks if the item is out of bounds
 int out_of_bounds(Item item) { 
     switch(item.direction) {
         case LEFT:  return item.column + item.dimension < 0;
@@ -40,6 +45,7 @@ int is_frog_drawned(Item *frog, Flow *flow) {
     return 1;
 }
 
+// Returns the pointer to the crocodile with the given id
 Item *get_crocodile(Flow *flow, Item *new) {
     for (unsigned int i = 0; i < flow->how_many_crocodiles; i++) {
         if (flow->crocodiles[i].id == new->id) {
@@ -57,6 +63,7 @@ void drag_frog(Item *frog, int direction) {
     }
 }
 
+// Updates the crocodile with the given id
 void update_crocodile(Flow *flow, Item *crocodile) {
     for (unsigned int i=0; i<flow->how_many_crocodiles - 1; i++) {
         if (flow->crocodiles[i].id == crocodile->id) {
@@ -66,12 +73,14 @@ void update_crocodile(Flow *flow, Item *crocodile) {
     }
 }
 
-// implements the Flow struct as a queue
+// Implements the Flow struct as a queue
 void rotate(Flow *flow) { 
-    for (unsigned int i = 0; i < flow->how_many_crocodiles - 1; i++) {
-        flow->crocodiles[i] = flow->crocodiles[i + 1];
+    if (flow->how_many_crocodiles > 0) {
+        for (unsigned int i = 0; i < flow->how_many_crocodiles - 1; i++) {
+            flow->crocodiles[i] = flow->crocodiles[i + 1];
+        }
+        flow->how_many_crocodiles--;
     }
-    flow->how_many_crocodiles--;
 }
 
 // Initializes a new manche
@@ -155,16 +164,18 @@ void manche(WINDOW *game_win) {
     Item item;
     // newCrocodiles(&game, &buffer);
 
-    Item tempitem = (Item){
-            .line = 3,
-            .column = 2,
-            .type = CROCODILE,
-            .dimension = CROCODILE_DIM,
-            .speed = 1,
-            .direction = RIGHT,
-            .id = 0
-        };
-    newTask(&buffer, &crocodile, &tempitem);
+    /* for testing purposes */ 
+        Item tempitem = (Item){
+                .line = 3,
+                .column = 2,
+                .type = CROCODILE,
+                .dimension = CROCODILE_DIM,
+                .speed = 1,
+                .direction = RIGHT,
+                .id = 0
+            };
+        newTask(&buffer, &crocodile, &tempitem);
+    /* for testing purposes */ 
 
     while (TRUE) {
         wrefresh(game_win);
