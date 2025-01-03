@@ -2,7 +2,7 @@
 
 void frog (Buffer buffer, Item item) {
     while (TRUE) {
-        // readItem(&buffer, &item, REVERSE_PIPE);
+        readItem(&buffer, &item, REVERSE_PIPE);
         int c = getch();
         switch (c) {
             case 'q': item.type = EXIT; break;

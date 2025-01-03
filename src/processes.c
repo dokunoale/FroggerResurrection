@@ -1,4 +1,5 @@
 #include "processes.h"
+#include <fcntl.h>
 
 // Initializes a PID list. @note Defined in processes.c
 void init_pidlist(PidList *pid_list) {
@@ -65,12 +66,34 @@ void signal_all(PidList *pid_list, int signal) {
  */
 Buffer newBuffer() {
     Buffer buffer;
-    if( pipe(buffer.main_pipe_fd ) != 0 ) {
-        perror("Error creating main pipe\n");
+
+    // Crea la main pipe
+    if (pipe(buffer.main_pipe_fd) != 0) {
+        perror("Error creating main pipe");
         _exit(EXIT_FAILURE);
     }
-    pipe(buffer.reverse_pipe_fd);
+
+    // Crea la reverse pipe
+    if (pipe(buffer.reverse_pipe_fd) != 0) {
+        perror("Error creating reverse pipe");
+        _exit(EXIT_FAILURE);
+    }
+
+    // Configura il file descriptor della reverse pipe in modalità non bloccante
+    int flags = fcntl(buffer.reverse_pipe_fd[PIPE_READ], F_GETFL, 0);
+    if (flags == -1) {
+        perror("Error getting flags for reverse pipe");
+        _exit(EXIT_FAILURE);
+    }
+
+    if (fcntl(buffer.reverse_pipe_fd[PIPE_READ], F_SETFL, flags | O_NONBLOCK) == -1) {
+        perror("Error setting non-blocking mode for reverse pipe");
+        _exit(EXIT_FAILURE);
+    }
+
+    // Inizializza la lista dei PID
     init_pidlist(&buffer.pid_list);
+
     return buffer;
 }
 
@@ -133,16 +156,31 @@ void writeItem(Buffer *buffer, Item *item, Pipe pipe) {
  */
 void readItem(Buffer *buffer, Item *item, Pipe pipe) {
     switch (pipe) {
-        Item newitem; ssize_t size;
+        Item newitem;
+        ssize_t size;
+
         case MAIN_PIPE:
-            while(read(buffer->main_pipe_fd[PIPE_READ], &newitem, sizeof(Item)) < 0) {
-                if(errno != EINTR) _exit(EXIT_FAILURE);
+            // Leggi dalla main pipe (bloccante)
+            while (read(buffer->main_pipe_fd[PIPE_READ], &newitem, sizeof(Item)) < 0) {
+                if (errno != EINTR) _exit(EXIT_FAILURE);
             }
-            if (sizeof(newitem) == sizeof(Item)) { *item = newitem; }
+            if (sizeof(newitem) == sizeof(Item)) {
+                *item = newitem;
+            }
             break;
+
         case REVERSE_PIPE:
+            // Leggi dalla reverse pipe (non bloccante)
             size = read(buffer->reverse_pipe_fd[PIPE_READ], &newitem, sizeof(Item));
-            if (size == sizeof(Item)) { *item = newitem; }
+            if (size < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+                // Nessun dato disponibile, restituisce senza azione
+                return;
+            } else if (size == sizeof(Item)) {
+                *item = newitem;
+            } else if (size < 0) {
+                perror("Error reading from reverse pipe");
+                _exit(EXIT_FAILURE);
+            }
             break;
     }
 }

@@ -87,7 +87,7 @@ void rotate(Flow *flow) {
 Game new_manche() {
     Game game;
     game.Frog = (Item){
-        .line = GAME_HEIGHT - 1,
+        .line = GAME_HEIGHT - 2,
         .column = GAME_WITDH / 2,
         .type = FROG,
         .dimension = FROG_DIM,
@@ -96,7 +96,7 @@ Game new_manche() {
         .id = 0
     };
 
-    int draw = choose(LEFT, RIGHT); 
+    int draw = LEFT; //choose(LEFT, RIGHT); 
     for (int i=2; i < NUM_FLOWS + 2; i++) {
         game.flows[i].line = i; 
         game.flows[i].direction = direction(i, draw); 
@@ -157,23 +157,23 @@ void manche(WINDOW *game_win) {
 
     Item item;
 
-    /* for testing purposes 
-        Item tempitem = (Item){
-                .line = 3,
-                .column = 2,
-                .type = CROCODILE,
-                .dimension = CROCODILE_DIM,
-                .speed = 1,
-                .direction = RIGHT,
-                .id = 0
+    //for tests (rimuovere)
+    Item tempitem = (Item){
+        .line = 9,
+        .column = GAME_WITDH -1 -CROCODILE_DIM,
+        .type = CROCODILE,
+        .dimension = CROCODILE_DIM,
+        .speed = game.flows[tempitem.line].speed,
+        .direction = game.flows[tempitem.line].direction,
+        .id = 0
             };
-        newTask(&buffer, &crocodile, &tempitem);
-        game.flows[tempitem.line - 2].crocodiles[game.flows[tempitem.line - 2].how_many_crocodiles] = tempitem;
-        game.flows[tempitem.line - 2].how_many_crocodiles++;
-    for testing purposes */ 
+    newTask(&buffer, &crocodile, &tempitem);
+    game.flows[tempitem.line].crocodiles[game.flows[tempitem.line].how_many_crocodiles] = tempitem;
+    game.flows[tempitem.line].how_many_crocodiles++;
+    //end test
 
     while (TRUE) {
-        new_crocodiles(&game, &buffer);
+        //new_crocodiles(&game, &buffer); TODO:rimettere
         readItem(&buffer, &item, MAIN_PIPE);
 
         mvwprintw(game_win, 0, 0, "read -> %d", item.type);
@@ -187,7 +187,7 @@ void manche(WINDOW *game_win) {
                 displayItem(game_win, &game.Frog, &item);
                 game.Frog = item;
 
-                if (item.line != GAME_HEIGHT - 1) {
+                if (item.line != GAME_HEIGHT - 2) {
                     if (is_frog_drawned(&item, &game.flows[item.line])) {
                         end_manche(&game, &buffer);
                         // TODO: implement other functions
