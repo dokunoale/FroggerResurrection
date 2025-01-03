@@ -11,13 +11,20 @@
 #include <fcntl.h>
 
 typedef struct {
-    int *list;
+    pid_t *list;
     int length;
 } PidList;
 
+/**
+ * @brief The structure for a buffer.
+ * @param main_pipe_fd The file descriptor for the main pipe.
+ * @param reverse_pipe_fd The file descriptor for the reverse pipe.
+ * @note Defined in processes.h
+ */
 typedef struct {
     int main_pipe_fd[2];
     int reverse_pipe_fd[2];
+    PidList pid_list;
 } Buffer;
 
 /**
@@ -41,15 +48,17 @@ typedef struct {
 } Item;
 
 #define PID_CHILD 0
-#define PIPE_READ 0
-#define PIPE_WRITE 1
+#define MSLEEP_INTEVAL 100
+#define MSEC_IN_SEC 1000
+#define SLEEP_TIME 1
 
-enum { MAIN_PIPE, REVERSE_PIPE };
+typedef enum { PIPE_READ, PIPE_WRITE } PipeAction;
+typedef enum { MAIN_PIPE, REVERSE_PIPE } Pipe;
 
 Buffer newBuffer();
 void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item);
 void killTask(Buffer *buffer, Item *item);
-void writeItem (Buffer *buffer, Item *item, int pipe);
-void readItem (Buffer *buffer, Item *item, int pipe);
+void writeItem (Buffer *buffer, Item *item, Pipe pipe);
+void readItem (Buffer *buffer, Item *item, Pipe pipe);
 
 #endif // PROCESSES_H

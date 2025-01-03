@@ -152,22 +152,22 @@ void manche(WINDOW *game_win) {
     Game game = new_manche();
     newTask(&buffer, &frog, &game.Frog);
 
+    Item item;
+    // newCrocodiles(&game, &buffer);
+
+    Item tempitem = (Item){
+            .line = 3,
+            .column = 2,
+            .type = CROCODILE,
+            .dimension = CROCODILE_DIM,
+            .speed = 1,
+            .direction = RIGHT,
+            .id = 0
+        };
+    newTask(&buffer, &crocodile, &tempitem);
+
     while (TRUE) {
         wrefresh(game_win);
-
-        Item item;
-        // newCrocodiles(&game, &buffer);
-
-        Item tempitem = (Item){
-                .line = 3,
-                .column = 2,
-                .type = CROCODILE,
-                .dimension = CROCODILE_DIM,
-                .speed = 1,
-                .direction = RIGHT,
-                .id = 0
-            };
-        newTask(&buffer, &crocodile, &tempitem);
 
         readItem(&buffer, &item, MAIN_PIPE);
 
