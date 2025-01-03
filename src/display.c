@@ -22,8 +22,8 @@ void displayItem(WINDOW* win, Item *old, Item *new){
             wrefresh(win);
             break;
         case CROCODILE:
-            mvwaddstr(win, old->line, old->column, "   ");
-            mvwaddstr(win, new->line, new->column, "CCC");
+            mvwprintw(win, old->line, old->column, "   ");
+            mvwprintw(win, new->line, new->column, "CCC");
             wrefresh(win);
             break;
     }

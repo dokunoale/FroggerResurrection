@@ -4,7 +4,7 @@
 #include <ncurses.h>
 #include "processes.h"
 
-#define USLEEP 10000
+#define USLEEP 10000 * 10
 
 // Ncurses constants
 #define NO_CURSOR 0
@@ -55,7 +55,7 @@ typedef struct Flow {
  * @param frog The frog item.
  */
 typedef struct Game{
-    Flow flows[NUM_FLOWS];
+    Flow flows[GAME_HEIGHT - 2];
     Item Frog;
 } Game;
 
