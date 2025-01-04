@@ -27,6 +27,8 @@
 #define GAME_HEIGHT 12
 #define GAME_WITDH 15 * 2
 
+#define DEN_HEIGHT 2
+
 #define FROG 0
 #define CROCODILE 1
 #define BULLET 2

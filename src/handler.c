@@ -85,7 +85,8 @@ void rotate(Flow *flow) {
 
 // Initializes a new manche
 Game new_manche() {
-    Game game;
+    Game game = (Game){0};
+
     game.Frog = (Item){
         .line = GAME_HEIGHT - 2,
         .column = GAME_WITDH / 2,
@@ -97,11 +98,15 @@ Game new_manche() {
     };
 
     int draw = LEFT; //choose(LEFT, RIGHT); 
-    for (int i=2; i < NUM_FLOWS + 2; i++) {
+    for (int i = 0; i < NUM_FLOWS; i++) { 
         game.flows[i].line = i; 
         game.flows[i].direction = direction(i, draw); 
         game.flows[i].speed = choose(MIN_SPEED, MAX_SPEED);
         game.flows[i].how_many_crocodiles = 0; 
+
+        for (int j = 0; j < CROCODILE_MAX_NUM; j++) {
+            game.flows[i].crocodiles[j] = (Item){0};
+        }
     }
 
     return game;
@@ -109,8 +114,8 @@ Game new_manche() {
 
 // Ends the manche by killing all the processes
 void end_manche(Game *game, Buffer *buffer) {
-    for (unsigned int i=0; i < GAME_HEIGHT - 2; i++) {
-        for (unsigned int j=0; j < game->flows[i].how_many_crocodiles; j++) {
+    for (unsigned int i = 0; i < NUM_FLOWS; i++) { 
+        for (unsigned int j = 0; j < game->flows[i].how_many_crocodiles; j++) {
             killTask(buffer, &game->flows[i].crocodiles[j]);
         }
     }
@@ -120,17 +125,17 @@ void end_manche(Game *game, Buffer *buffer) {
 // Generates new crocodiles if all the conditions are met.
 void new_crocodiles(Game *game, Buffer *buffer) {
     // for each flow
-    for (unsigned int i=2; i < NUM_FLOWS + 2; i++) {
+    for (unsigned int i = 0; i < NUM_FLOWS; i++) { 
         if (!is_flow_full(&game->flows[i]) && is_edge_free(&game->flows[i], game->flows[i].direction)) {
             if (1) { // choose(1, PROBABILITY) == 1 // TODO: implement probability
                 Item new_croc = (Item){
-                    .line = i,
+                    .line = i + DEN_HEIGHT,
                     .column = game->flows[i].direction ? -CROCODILE_DIM + 1 : GAME_WITDH - 2, 
                     .type = CROCODILE,
                     .dimension = CROCODILE_DIM,
                     .speed = game->flows[i].speed,
                     .direction = game->flows[i].direction,
-                    .id = game->flows[i].how_many_crocodiles // Assign a unique id based on the current count
+                    .id = game->flows[i].how_many_crocodiles + 1
                 };
                 game->flows[i].crocodiles[game->flows[i].how_many_crocodiles] = new_croc;
                 game->flows[i].how_many_crocodiles++;
@@ -149,15 +154,13 @@ void new_crocodiles(Game *game, Buffer *buffer) {
  */
 void manche(WINDOW *game_win) {
 
-    wrefresh(game_win);
-
     Buffer buffer = newBuffer();
     Game game = new_manche();
     newTask(&buffer, &frog, &game.Frog);
 
     Item item;
 
-    //for tests (rimuovere)
+    /* for tests (rimuovere)
     Item tempitem = (Item){
         .line = 9,
         .column = GAME_WITDH -1 -CROCODILE_DIM,
@@ -170,10 +173,10 @@ void manche(WINDOW *game_win) {
     newTask(&buffer, &crocodile, &tempitem);
     game.flows[tempitem.line].crocodiles[game.flows[tempitem.line].how_many_crocodiles] = tempitem;
     game.flows[tempitem.line].how_many_crocodiles++;
-    //end test
+    //end test */
 
     while (TRUE) {
-        //new_crocodiles(&game, &buffer); TODO:rimettere
+        new_crocodiles(&game, &buffer);
         readItem(&buffer, &item, MAIN_PIPE);
 
         mvwprintw(game_win, 0, 0, "read -> %d", item.type);
@@ -196,8 +199,8 @@ void manche(WINDOW *game_win) {
                 }
                 break;
             case CROCODILE:
-                displayItem(game_win, get_crocodile(&game.flows[item.line], &item), &item);
-                update_crocodile(&game.flows[item.line], &item);
+                displayItem(game_win, get_crocodile(&game.flows[item.line - DEN_HEIGHT], &item), &item);
+                update_crocodile(&game.flows[item.line - DEN_HEIGHT], &item);
 
                 if (out_of_bounds(item)) { 
                     killTask(&buffer, &item);
