@@ -16,10 +16,10 @@
 #define LEFT 0
 
 #define NUM_FLOWS 8
-#define PROBABILITY 10 // Probabilità di generare un coccodrillo 
-#define CROCODILE_MAX_NUM 5
-#define MIN_SPEED 3
-#define MAX_SPEED 2
+#define ODDS USLEEP // Probabilità di generare un coccodrillo 
+#define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso
+#define MIN_SPEED 4
+#define MAX_SPEED 4
 
 #define BOX_BORDER 2
 #define DEN_HEIGHT 2
@@ -56,14 +56,5 @@ typedef struct Flow {
     unsigned int how_many_crocodiles;
     Item *crocodiles;
 } Flow;
-
-/**
- * @param flow An array of flows.
- * @param frog The frog item.
- */
-typedef struct Game{
-    Flow *flows;
-    Item frog;
-} Game;
 
 #endif // UTILS_H

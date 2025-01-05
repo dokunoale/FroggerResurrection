@@ -108,12 +108,12 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
     if (pid == 0) { // Child process
         close(buffer->main_pipe_fd[PIPE_READ]); close(buffer->reverse_pipe_fd[PIPE_WRITE]);
         item->id = getpid(); 
-        add_pid(&buffer->pid_list, item->id);
         func(*buffer, *item); // Invoke the function
         close(buffer->main_pipe_fd[PIPE_WRITE]); close(buffer->reverse_pipe_fd[PIPE_READ]);
         _exit(EXIT_SUCCESS);
     } else { // Parent process
         item->id = pid; 
+        add_pid(&buffer->pid_list, item->id);
     }
 }
 
@@ -122,11 +122,10 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
  * 
  * @note Defined in processes.h
  */
-void killTask(Buffer *buffer, Item *item) {
-    close(buffer->main_pipe_fd[PIPE_WRITE]);
-    close(buffer->reverse_pipe_fd[PIPE_READ]);
+void killTask(Item *item) {
     kill(item->id, SIGKILL);
     waitpid(item->id, NULL, 0);
+    item->id = 0;
 }
 
 /**
@@ -162,6 +161,7 @@ void readItem(Buffer *buffer, Item *item, Pipe pipe) {
         case MAIN_PIPE:
             // Leggi dalla main pipe (bloccante)
             while (read(buffer->main_pipe_fd[PIPE_READ], &newitem, sizeof(Item)) < 0) {
+                msleep(SLEEP_TIME);
                 if (errno != EINTR) _exit(EXIT_FAILURE);
             }
             if (sizeof(newitem) == sizeof(Item)) {

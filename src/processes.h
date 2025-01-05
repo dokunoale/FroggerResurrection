@@ -51,14 +51,14 @@ typedef struct {
 #define PID_CHILD 0
 #define MSLEEP_INTEVAL 100
 #define MSEC_IN_SEC 1000
-#define SLEEP_TIME 1
+#define SLEEP_TIME 3
 
 typedef enum { PIPE_READ, PIPE_WRITE } PipeAction;
 typedef enum { MAIN_PIPE, REVERSE_PIPE } Pipe;
 
 Buffer newBuffer();
 void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item);
-void killTask(Buffer *buffer, Item *item);
+void killTask(Item *item);
 void writeItem (Buffer *buffer, Item *item, Pipe pipe);
 void readItem (Buffer *buffer, Item *item, Pipe pipe);
 
