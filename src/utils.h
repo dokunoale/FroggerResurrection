@@ -15,21 +15,23 @@
 #define LEFT 0
 
 #define NUM_FLOWS 8
-#define PROBABILITY 5 // Probabilità di generare un coccodrillo 
+#define PROBABILITY 10 // Probabilità di generare un coccodrillo 
 #define CROCODILE_MAX_NUM 5
-#define MIN_SPEED 8
+#define MIN_SPEED 3
 #define MAX_SPEED 2
 
 #define BOX_BORDER 2
 #define DEN_HEIGHT 2
 #define GAME_HEIGHT NUM_FLOWS + DEN_HEIGHT + 1
-#define GAME_WITDH 15 * 2
+#define GAME_WIDTH 15 * 2
+#define CROC_LEFT_START - CROCODILE_DIM
+#define CROC_RIGHT_START GAME_WIDTH
 
 // Screen size for windows
 #define WIN_GAME_HEIGHT GAME_HEIGHT
-#define WIN_GAME_WITDH GAME_WITDH
+#define WIN_GAME_WIDTH GAME_WIDTH
 #define WIN_MAIN_HEIGHT GAME_HEIGHT + BOX_BORDER
-#define WIN_MAIN_WIDTH GAME_WITDH + BOX_BORDER
+#define WIN_MAIN_WIDTH GAME_WIDTH + BOX_BORDER
 
 #define FROG 0
 #define CROCODILE 1
