@@ -1,5 +1,11 @@
 #include "handler.h"
 
+// Returns a random number between min and max
+int choose(int min, int max) { srand(time(NULL)); return rand() % (max - min + 1) + min; }
+
+// Returns the direction of the flow
+int direction(int line, int dir) { return dir ? line % 2 : (line + 1) % 2; }
+
 // Checks if the edge of the flow is empty.
 int edge_empty(Flow *flow) {
     if (flow->how_many_crocodiles == 0) { return 1; }
@@ -36,11 +42,12 @@ void update_crocodile(Flow* flow, Item* item) {
 // Returns a new array of flows.
 Flow* new_flows() {
     Flow* flows = (Flow*)malloc(sizeof(Flow) * NUM_FLOWS);
+    int draw = choose(LEFT, RIGHT); 
     for (int i = 0; i < NUM_FLOWS; i++) {
         Item* crocodiles = (Item*)calloc(CROCODILE_MAX_NUM, sizeof(Item));
         Flow flow = (Flow){
             .line = i,
-            .direction = i % 2,
+            .direction = direction(i, draw),
             .speed = MIN_SPEED + rand() % (MIN_SPEED - MAX_SPEED + 1),
             .how_many_crocodiles = 0,
             .crocodiles = crocodiles
