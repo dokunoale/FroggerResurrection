@@ -113,8 +113,8 @@ void rotate(Flow* flow) {
             flow->crocodiles[i] = flow->crocodiles[i + 1];
         }
         flow->crocodiles[flow->how_many_crocodiles] = (Item){0};
+        flow->how_many_crocodiles--;
     }
-    flow->how_many_crocodiles--;
 }
 
 void manche(WINDOW* win) {
@@ -125,15 +125,16 @@ void manche(WINDOW* win) {
     while(1) {
         Item receveid;
         readItem(&buffer, &receveid, MAIN_PIPE);
+
         new_crocodiles(&buffer, &game);
 
+        mvwprintw(win, 0, 0, "flow %d -> %d ::: %d   ", 0, game.flows[0].crocodiles[0].column, game.flows[0].how_many_crocodiles);
         switch (receveid.type) {
             case FROG:
                 displayItem(win, &game.frog, &receveid);
                 game.frog = receveid;
                 break;
             case CROCODILE:
-                mvwprintw(win, 0, 0, "flow %d -> %d ::: %d   ", receveid.line - DEN_HEIGHT, game.flows[receveid.line - DEN_HEIGHT].crocodiles[0].column, game.flows[receveid.line - DEN_HEIGHT].how_many_crocodiles);
                 displayItem(win, get_crocodile(&game.flows[receveid.line - DEN_HEIGHT], &receveid), &receveid);
                 update_crocodile(&game.flows[receveid.line - DEN_HEIGHT], &receveid);
                 if (out_of_bounds(&receveid)) { killTask(&buffer, &receveid); rotate(&game.flows[receveid.line - DEN_HEIGHT]); }
@@ -147,6 +148,8 @@ void manche(WINDOW* win) {
             case EXIT:
                 break;
         }
+
+        
 
         if (receveid.type == EXIT) { break; }
     }
