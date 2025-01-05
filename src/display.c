@@ -15,16 +15,16 @@ void initDisplay() {
 }
 
 void displayItem(WINDOW* win, Item *old, Item *new){
+    if (old == NULL) { return; }
     switch (new->type) {
         case FROG:
             mvwaddch(win, old->line, old->column, ' ');
             mvwaddch(win, new->line, new->column, 'R');
-            wrefresh(win);
             break;
         case CROCODILE:
-            mvwprintw(win, old->line, old->column, "   ");
-            mvwprintw(win, new->line, new->column, "CCC");
-            wrefresh(win);
+            mvwaddstr(win, old->line, old->column, "   ");
+            mvwaddstr(win, new->line, new->column, "CCC");
             break;
     }
+    wrefresh(win);
 }

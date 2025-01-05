@@ -10,10 +10,6 @@
 #define NO_CURSOR 0
 #define CURSOR 1
 
-// Screen size for each window
-#define WIN_MAIN_HEIGHT 13
-#define WIN_MAIN_WIDTH 15 * 2
-
 // directions
 #define RIGHT 1
 #define LEFT 0
@@ -24,10 +20,16 @@
 #define MIN_SPEED 8
 #define MAX_SPEED 2
 
-#define GAME_HEIGHT 12
+#define BOX_BORDER 2
+#define DEN_HEIGHT 2
+#define GAME_HEIGHT NUM_FLOWS + DEN_HEIGHT + 1
 #define GAME_WITDH 15 * 2
 
-#define DEN_HEIGHT 2
+// Screen size for windows
+#define WIN_GAME_HEIGHT GAME_HEIGHT
+#define WIN_GAME_WITDH GAME_WITDH
+#define WIN_MAIN_HEIGHT GAME_HEIGHT + BOX_BORDER
+#define WIN_MAIN_WIDTH GAME_WITDH + BOX_BORDER
 
 #define FROG 0
 #define CROCODILE 1
@@ -49,7 +51,7 @@ typedef struct Flow {
     unsigned int direction;
     unsigned int speed;
     unsigned int how_many_crocodiles;
-    Item crocodiles[CROCODILE_MAX_NUM];
+    Item *crocodiles;
 } Flow;
 
 /**
@@ -57,8 +59,8 @@ typedef struct Flow {
  * @param frog The frog item.
  */
 typedef struct Game{
-    Flow flows[GAME_HEIGHT - 2];
-    Item Frog;
+    Flow *flows;
+    Item frog;
 } Game;
 
 #endif // UTILS_H

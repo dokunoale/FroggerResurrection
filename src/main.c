@@ -3,10 +3,8 @@
 int main() {
 
     initDisplay();
-    // WINDOW *main_win = newwin(WIN_MAIN_HEIGHT, WIN_MAIN_WIDTH, 0, 0);
-    WINDOW *game_win = newwin(WIN_MAIN_HEIGHT, WIN_MAIN_WIDTH, 1, 1);
-    box(game_win, 0, 0); // todo: rimuovere
-    wrefresh(game_win);
+    WINDOW *main_win = newwin(WIN_MAIN_HEIGHT, WIN_MAIN_WIDTH, 0, 0); box(main_win, 0, 0); wrefresh(main_win);
+    WINDOW *game_win = newwin(WIN_GAME_HEIGHT, WIN_GAME_WITDH, 1, 1); wrefresh(game_win);
 
     manche(game_win);
 

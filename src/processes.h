@@ -34,6 +34,7 @@ typedef struct {
  * @param type The type of the item.
  * @param dimension The dimension of the item.
  * @param speed The speed of the item.
+ * @param direction The direction of the item.
  * @param id The PID of the item.
  * @note Defined in processes.h  
  */
