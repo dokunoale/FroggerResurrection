@@ -5,7 +5,7 @@
 #include <time.h>
 #include "processes.h"
 
-#define USLEEP 10000 * 10
+#define USLEEP 10000 * 4
 
 // Ncurses constants
 #define NO_CURSOR 0
@@ -16,31 +16,45 @@
 #define LEFT 0
 
 #define NUM_FLOWS 8
-#define ODDS USLEEP * 5 // Probabilità di generare un coccodrillo 
-#define CROCODILE_MAX_NUM 5 // Numero massimo di coccodrilli per flusso
+#define ODDS (100) // Probabilità di generare un coccodrillo 
+#define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso
 #define MIN_SPEED 4
 #define MAX_SPEED 1
 
-#define BOX_BORDER 2
-#define DEN_HEIGHT 2
-#define GAME_HEIGHT NUM_FLOWS + DEN_HEIGHT + 1
-#define GAME_WIDTH 15 * 2
-#define CROC_LEFT_START - CROCODILE_DIM
-#define CROC_RIGHT_START GAME_WIDTH
+/**
+ * @note WIN_RATIO is the ratio between the game matrix and the screen.
+ * For simplicity, the ratio only works for height in game logic.
+ */
+#define RATIO 2
+#define WIN_HEIGHT_RATIO (4 * RATIO)
+#define WIN_WIDTH_RATIO  (6 * RATIO)
+#define STEP 3
 
-// Screen size for windows
-#define WIN_GAME_HEIGHT GAME_HEIGHT
-#define WIN_GAME_WIDTH GAME_WIDTH
-#define WIN_MAIN_HEIGHT GAME_HEIGHT + BOX_BORDER
-#define WIN_MAIN_WIDTH GAME_WIDTH + BOX_BORDER
-
+// Item types and dimensions
 #define FROG 0
 #define CROCODILE 1
 #define BULLET 2
 #define GRANADE 3
 #define EXIT 10
-#define FROG_DIM 1
-#define CROCODILE_DIM 3
+#define FROG_DIM (1 * WIN_WIDTH_RATIO)
+#define CROCODILE_DIM (3 * WIN_WIDTH_RATIO)
+
+// Game matrix constants: WIN_RATIO only affects width
+#define DEN_HEIGHT          2
+#define GAME_HEIGHT         ((NUM_FLOWS) + (DEN_HEIGHT) + 1)
+#define GAME_WIDTH          (15 * (WIN_WIDTH_RATIO) )
+#define CROC_LEFT_START     (- (CROCODILE_DIM))
+#define CROC_RIGHT_START    (GAME_WIDTH)
+#define CROC_SEP            (WIN_WIDTH_RATIO)
+
+// Screen size for windows: WIN_RATIO only affects height
+#define BOX_BORDER          2
+#define WIN_GAME_HEIGHT     ((GAME_HEIGHT) * WIN_HEIGHT_RATIO)
+#define WIN_GAME_WIDTH      (GAME_WIDTH)
+#define WIN_MAIN_HEIGHT     ((WIN_GAME_HEIGHT) + (BOX_BORDER))
+#define WIN_MAIN_WIDTH      ((WIN_GAME_WIDTH) + (BOX_BORDER))
+
+
 
 /**
  * @param line The line of the flow.

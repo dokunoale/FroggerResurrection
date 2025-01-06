@@ -14,37 +14,36 @@ void initDisplay() {
     clear(); refresh();
 }
 
-void displayItem(WINDOW* win, Item *old, Item *new) {
-    if (old == NULL || new == NULL) { 
-        return; 
+void mwprintarea(WINDOW *win, int start_y, int start_x, int height, int width, char text) {
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            mvwprintw(win, start_y + i, start_x + j, "%c", text);
+        }
+    }
+    wrefresh(win);
+}
+
+void displayItem(WINDOW* win, Item *old, Item *new, Item *background) {
+    if (old == NULL || new == NULL) { return; }
+
+    char back_symbol = WATER_SYM;
+    if (background != NULL) {
+        switch (background->type) {
+            case FROG: { back_symbol = FROG_SYM; } break;
+            case CROCODILE: { back_symbol = CROCODILE_SYM; } break;
+        }
     }
 
-    // Cancella la rappresentazione precedente
     switch (old->type) {
-        case FROG:
-            mvwaddch(win, old->line, old->column, ' ');
-            break;
-        case CROCODILE:
-            for (int i = 0; i < CROCODILE_DIM; i++) {
-                if (old->column + i < GAME_WIDTH && old->line < GAME_HEIGHT) {
-                    mvwaddch(win, old->line, old->column + i, ' ');
-                }
-            }
-            break;
-    }
-
-    // Disegna la nuova rappresentazione
-    switch (new->type) {
-        case FROG:
-            mvwaddch(win, new->line, new->column, 'R');
-            break;
-        case CROCODILE:
-            for (int i = 0; i < CROCODILE_DIM; i++) {
-                if (new->column + i < GAME_WIDTH && new->line < GAME_HEIGHT) {
-                    mvwaddch(win, new->line, new->column + i, 'C');
-                }
-            }
-            break;
+        case FROG: {
+            mwprintarea(win, old->line * WIN_HEIGHT_RATIO, old->column, WIN_HEIGHT_RATIO, FROG_DIM, back_symbol);
+            mwprintarea(win, new->line * WIN_HEIGHT_RATIO, new->column, WIN_HEIGHT_RATIO, FROG_DIM, FROG_SYM);
+            mvwprintw(win, 0, 0, "Frog: %d %d", new->line, new->column);
+        } break;
+        case CROCODILE: {
+            mwprintarea(win, old->line * WIN_HEIGHT_RATIO, old->column, WIN_HEIGHT_RATIO, CROCODILE_DIM, back_symbol);
+            mwprintarea(win, new->line * WIN_HEIGHT_RATIO, new->column, WIN_HEIGHT_RATIO, CROCODILE_DIM, CROCODILE_SYM);
+        } break;
     }
 
     // Aggiorna la finestra

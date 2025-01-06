@@ -66,7 +66,7 @@ void free_flows(Flow* flows) {
 Item new_frog(Buffer* buffer) {
     Item item = (Item){
         .line = DEN_HEIGHT + NUM_FLOWS,
-        .column = GAME_WIDTH / 2,
+        .column = (GAME_WIDTH) / 2,
         .type = FROG,
         .dimension = FROG_DIM,
         .speed = 0,
@@ -96,9 +96,9 @@ Item new_crocodile(Buffer* buffer, Flow* flow) {
 int boundary_check(Flow* flow) {
     for (unsigned int i = 0; i < CROCODILE_MAX_NUM; i++) {
         if (flow->crocodiles[i].id != 0) {
-            if (flow->crocodiles[i].direction == RIGHT && flow->crocodiles[i].column <= 1) {
+            if (flow->crocodiles[i].direction == RIGHT && flow->crocodiles[i].column <= (CROC_SEP * choose(1, 100))) {
                 return 0;
-            } else if (flow->crocodiles[i].direction == LEFT && flow->crocodiles[i].column + CROCODILE_DIM >= GAME_WIDTH - 1) {
+            } else if (flow->crocodiles[i].direction == LEFT && flow->crocodiles[i].column + CROCODILE_DIM >= GAME_WIDTH - (CROC_SEP * choose(1, 100))) {
                 return 0;
             }
         }
@@ -141,12 +141,12 @@ void manche(WINDOW* win) {
         
         switch (receveid.type) {
             case FROG: {
-                displayItem(win, &frog_item, &receveid);
+                displayItem(win, &frog_item, &receveid, NULL);
                 frog_item = receveid;
             } break;
             case CROCODILE: {
                 Item* stored = get_crocodile(flow, &receveid);
-                displayItem(win, stored, &receveid);
+                displayItem(win, stored, &receveid, NULL);
                 *stored = receveid;
                 if (out_of_bounds(stored)) { 
                     killTask(stored);
