@@ -106,11 +106,12 @@ int boundary_check(Flow* flow) {
     return 1;
 }
 
+// Fills the flow with crocodiles if there is space. TODO: aggiungere randomicità
 void fill_flow(Buffer* buffer, Flow* flow) {
     if (flow->how_many_crocodiles < CROCODILE_MAX_NUM) {
         // Check if there is a free space for a new crocodile
         for (unsigned int i = 0; i < CROCODILE_MAX_NUM; i++) {
-            if (flow->crocodiles[i].id == 0 && boundary_check(flow) && choose(0, ODDS) == 0) {
+            if (flow->crocodiles[i].id == 0 && boundary_check(flow)) {
                 flow->crocodiles[i] = new_crocodile(buffer, flow);
                 flow->how_many_crocodiles++;
                 break;

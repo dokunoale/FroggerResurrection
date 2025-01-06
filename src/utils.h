@@ -16,10 +16,10 @@
 #define LEFT 0
 
 #define NUM_FLOWS 8
-#define ODDS USLEEP // Probabilità di generare un coccodrillo 
-#define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso
+#define ODDS USLEEP * 5 // Probabilità di generare un coccodrillo 
+#define CROCODILE_MAX_NUM 5 // Numero massimo di coccodrilli per flusso
 #define MIN_SPEED 4
-#define MAX_SPEED 4
+#define MAX_SPEED 1
 
 #define BOX_BORDER 2
 #define DEN_HEIGHT 2

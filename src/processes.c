@@ -44,9 +44,9 @@ void remove_pid(PidList *pid_list, pid_t pid) {
 }
 
 // Sleep for certain amount of milliseconds, handling interrupts
-void msleep(time_t timer) {
+void msleep(time_t t) {
     for(int dec = 0; dec < MSLEEP_INTEVAL; dec++) {
-        usleep(timer * MSEC_IN_SEC / MSLEEP_INTEVAL);
+        usleep(t * MSEC_IN_SEC / MSLEEP_INTEVAL);
     }
 }
 
