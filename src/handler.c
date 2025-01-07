@@ -66,7 +66,7 @@ void free_flows(Flow* flows) {
 Item new_frog(Buffer* buffer) {
     Item item = (Item){
         .line = DEN_HEIGHT + NUM_FLOWS,
-        .column = (GAME_WIDTH) / 2,
+        .column = (GAME_WIDTH - FROG_DIM) / 2,
         .type = FROG,
         .dimension = FROG_DIM,
         .speed = 0,
@@ -96,9 +96,9 @@ Item new_crocodile(Buffer* buffer, Flow* flow) {
 int boundary_check(Flow* flow) {
     for (unsigned int i = 0; i < CROCODILE_MAX_NUM; i++) {
         if (flow->crocodiles[i].id != 0) {
-            if (flow->crocodiles[i].direction == RIGHT && flow->crocodiles[i].column <= (CROC_SEP * choose(1, 100))) {
+            if (flow->crocodiles[i].direction == RIGHT && flow->crocodiles[i].column <= (CROC_SEP * choose(1, ODDS))) {
                 return 0;
-            } else if (flow->crocodiles[i].direction == LEFT && flow->crocodiles[i].column + CROCODILE_DIM >= GAME_WIDTH - (CROC_SEP * choose(1, 100))) {
+            } else if (flow->crocodiles[i].direction == LEFT && flow->crocodiles[i].column + CROCODILE_DIM >= GAME_WIDTH - (CROC_SEP * choose(1, ODDS))) {
                 return 0;
             }
         }

@@ -12,12 +12,18 @@ void initDisplay() {
     keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE);
     clear(); refresh();
+
+    start_color();
+    // Set the colors
+    init_pair(WATER_COLOR, COLOR_WHITE, COLOR_CYAN);
+    init_pair(FROG_COLOR, COLOR_GREEN, COLOR_WHITE);
+    init_pair(CROCODILE_COLOR, COLOR_YELLOW, COLOR_WHITE);
 }
 
-void mwprintarea(WINDOW *win, int start_y, int start_x, int height, int width, char text) {
+void mwprintarea(WINDOW *win, int start_y, int start_x, int height, int width, int color) {
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
-            mvwprintw(win, start_y + i, start_x + j, "%c", text);
+            mvwaddch(win, start_y + i, start_x + j, ' ' | COLOR_PAIR(color));
         }
     }
     wrefresh(win);
@@ -26,11 +32,11 @@ void mwprintarea(WINDOW *win, int start_y, int start_x, int height, int width, c
 void displayItem(WINDOW* win, Item *old, Item *new, Item *background) {
     if (old == NULL || new == NULL) { return; }
 
-    char back_symbol = WATER_SYM;
+    char back_symbol = WATER_COLOR;
     if (background != NULL) {
         switch (background->type) {
-            case FROG: { back_symbol = FROG_SYM; } break;
-            case CROCODILE: { back_symbol = CROCODILE_SYM; } break;
+            case FROG: { back_symbol = FROG_COLOR; } break;
+            case CROCODILE: { back_symbol = CROCODILE_COLOR; } break;
         }
     }
 
