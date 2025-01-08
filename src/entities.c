@@ -1,7 +1,7 @@
 #include "entities.h"
 
-void frog (Buffer buffer, Item item) {
-    while (TRUE) {
+void frog(Buffer buffer, Item item) {
+    while(1) {
         readItem(&buffer, &item, REVERSE_PIPE);
         int c;
         while ((c = getch()) == ERR) {
@@ -18,9 +18,19 @@ void frog (Buffer buffer, Item item) {
     }
 }
 
-void crocodile (Buffer buffer, Item crocodile) {
-    Item item = crocodile;
-    while(TRUE){
+void crocodile(Buffer buffer, Item item) {
+    while(1){
+        switch(item.direction) {
+            case RIGHT: item.column += STEP; break;
+            case LEFT:  item.column -= STEP; break;
+        }
+        writeItem(&buffer, &item, MAIN_PIPE);
+        usleep(item.speed * USLEEP);
+    }
+}
+
+void bullet(Buffer buffer, Item item) {
+    while(1){
         switch(item.direction) {
             case RIGHT: item.column += STEP; break;
             case LEFT:  item.column -= STEP; break;

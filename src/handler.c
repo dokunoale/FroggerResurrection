@@ -25,6 +25,20 @@ Item* get_crocodile(Flow* flow, Item* item) {
     return NULL;
 }
 
+Item* random_crocodile(Flow* flow) {
+    Item* crocodiles = (Item*)calloc(CROCODILE_MAX_NUM, sizeof(Item));
+    unsigned int availables = 0;
+    for (unsigned int i = 0; i < CROCODILE_MAX_NUM; i++) {
+        if (flow->crocodiles[i].id != 0) {
+            crocodiles[i] = flow->crocodiles[i];
+            availables++;
+        }
+    }
+    Item* choose = &crocodiles[rand() % availables];
+    free(crocodiles);
+    return choose;
+}
+
 // Updates the crocodile in the Flow with the same id as the given item.
 void update_crocodile(Flow* flow, Item* item) {
     Item* crocodile = get_crocodile(flow, item);
@@ -90,6 +104,20 @@ Item new_crocodile(Buffer* buffer, Flow* flow) {
     };
     newTask(buffer, &crocodile, &item);
     return item;
+}
+
+// Returns a new bullet.
+void new_bullet(Buffer* buffer, Flow* flow) {
+    Item item = (Item){
+        .line = flow->line,
+        .column = 1,
+        .type = BULLET,
+        .dimension = BULLET_DIM,
+        .speed = flow->speed,
+        .direction = flow->direction,
+        .id = 0
+    };
+    newTask(buffer, &bullet, &item);
 }
 
 // Checks if there is any crocodile in the boundaries.

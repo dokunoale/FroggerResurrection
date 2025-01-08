@@ -26,7 +26,6 @@ void mwprintarea(WINDOW *win, int start_y, int start_x, int height, int width, i
             mvwaddch(win, start_y + i, start_x + j, ' ' | COLOR_PAIR(color));
         }
     }
-    wrefresh(win);
 }
 
 void displayItem(WINDOW* win, Item *old, Item *new, Item *background) {
