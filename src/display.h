@@ -14,11 +14,12 @@
 enum colors { 
     WATER_COLOR = 100, 
     FROG_COLOR, 
-    CROCODILE_COLOR,
-    FROG_ON_CROC
+    CROCODILE_COLOR, 
+    BULLET_COLOR,
+    RESERVED
 };
 
 void initDisplay();
-void displayItem(WINDOW* win, Item* old, Item* new, char background);
+void displayItem(WINDOW* win, Item* old, Item* new);
 
 #endif // DISPLAY_H

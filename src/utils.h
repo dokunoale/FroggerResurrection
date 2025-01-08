@@ -5,7 +5,7 @@
 #include <time.h>
 #include "processes.h"
 
-#define USLEEP 10000 * 4
+#define USLEEP 10000
 
 // directions
 #define RIGHT 1
@@ -17,8 +17,9 @@
 #define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso
 #define BULLET_MAX_NUM 1 // Numero massimo di proiettili per flusso
 
-#define MIN_SPEED 5 // velocità minima del flusso: influisce sulla usleep
-#define MAX_SPEED 1 // velocità massima del flusso: influisce sulla usleep
+#define MIN_SPEED 18 // velocità minima del flusso: influisce sulla usleep
+#define MAX_SPEED 6 // velocità massima del flusso: influisce sulla usleep
+#define BULLET_SPEED 5 // velocità del proiettile
 
 /**
  * @note WIN_RATIO is the ratio between the game matrix and the screen.
@@ -33,8 +34,8 @@
 typedef enum type { FROG, CROCODILE, BULLET, GRANADE, EXIT } Type;
 #define FROG_DIM        (1 * WIN_WIDTH_RATIO)
 #define CROCODILE_DIM   (3 * WIN_WIDTH_RATIO)
-#define BULLET_DIM      (1 * WIN_WIDTH_RATIO)
-#define GRANADE_DIM     (1 * WIN_WIDTH_RATIO)
+#define BULLET_DIM      (2)
+#define GRANADE_DIM     BULLET_DIM
 
 // Game matrix constants: WIN_RATIO only affects width
 #define DEN_HEIGHT          2
