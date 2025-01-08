@@ -7,27 +7,26 @@
 
 #define USLEEP 10000 * 4
 
-// Ncurses constants
-#define NO_CURSOR 0
-#define CURSOR 1
-
 // directions
 #define RIGHT 1
 #define LEFT 0
 
 #define NUM_FLOWS 8 // Numero dei flussi
 #define ODDS (100) // Probabilità di generare un coccodrillo 
+
 #define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso
-#define MIN_SPEED 5
-#define MAX_SPEED 1
+#define BULLET_MAX_NUM 1 // Numero massimo di proiettili per flusso
+
+#define MIN_SPEED 5 // velocità minima del flusso: influisce sulla usleep
+#define MAX_SPEED 1 // velocità massima del flusso: influisce sulla usleep
 
 /**
  * @note WIN_RATIO is the ratio between the game matrix and the screen.
  * For simplicity, the ratio only works for height in game logic.
  */
 #define RATIO 1
-#define WIN_HEIGHT_RATIO 5 // (4 * RATIO)
-#define WIN_WIDTH_RATIO  8 // (6 * RATIO)
+#define WIN_HEIGHT_RATIO 5 
+#define WIN_WIDTH_RATIO  8 
 #define STEP 3
 
 // Item types and dimensions
@@ -63,8 +62,8 @@ typedef struct Flow {
     unsigned int line;
     unsigned int direction;
     unsigned int speed;
-    unsigned int how_many_crocodiles;
     Item *crocodiles;
+    Item *bullets;
 } Flow;
 
 #endif // UTILS_H
