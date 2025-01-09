@@ -43,13 +43,6 @@ void remove_pid(PidList *pid_list, pid_t pid) {
     }
 }
 
-// Sleep for certain amount of milliseconds, handling interrupts
-void msleep(time_t t) {
-    for(int dec = 0; dec < MSLEEP_INTEVAL; dec++) {
-        usleep(t * MSEC_IN_SEC / MSLEEP_INTEVAL);
-    }
-}
-
 // Signal all processes in the PID list
 void signal_all(PidList *pid_list, int signal) {
     for (int i = 0; i < pid_list->length; i++) {
