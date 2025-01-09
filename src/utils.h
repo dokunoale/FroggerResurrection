@@ -12,14 +12,17 @@
 #define LEFT 0
 
 #define NUM_FLOWS 8 // Numero dei flussi
-#define ODDS (100) // Probabilità di generare un coccodrillo 
+#define CROCODILE_ODDS (100) // Probabilità di generare un coccodrillo 
+#define BULLET_ODDS (5) // Probabilità di generare un proiettile
 
 #define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso
 #define BULLET_MAX_NUM 1 // Numero massimo di proiettili per flusso
+#define GRANADE_MAX_NUM 2 // Numero massimo di granate per flusso - NOTA: NON MODIFICARE
 
 #define MIN_SPEED 18 // velocità minima del flusso: influisce sulla usleep
 #define MAX_SPEED 6 // velocità massima del flusso: influisce sulla usleep
 #define BULLET_SPEED 5 // velocità del proiettile
+#define GRANADE_SPEED (BULLET_SPEED) // velocità della granata
 
 /**
  * @note WIN_RATIO is the ratio between the game matrix and the screen.
@@ -31,11 +34,11 @@
 #define STEP 3
 
 // Item types and dimensions
-typedef enum type { FROG, CROCODILE, BULLET, GRANADE, EXIT } Type;
+typedef enum type { FROG, CROCODILE, BULLET, GRANADE, EXIT, SHOT } Type;
 #define FROG_DIM        (1 * WIN_WIDTH_RATIO)
 #define CROCODILE_DIM   (3 * WIN_WIDTH_RATIO)
-#define BULLET_DIM      (2)
-#define GRANADE_DIM     BULLET_DIM
+#define BULLET_DIM      2
+#define GRANADE_DIM     (BULLET_DIM)
 
 // Game matrix constants: WIN_RATIO only affects width
 #define DEN_HEIGHT          2
@@ -65,6 +68,7 @@ typedef struct Flow {
     unsigned int speed;
     Item *crocodiles;
     Item *bullets;
+    Item *granades;
 } Flow;
 
 #endif // UTILS_H

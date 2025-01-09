@@ -123,8 +123,9 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
  * @note Defined in processes.h
  */
 void killTask(Item *item) {
-    kill(item->id, SIGKILL);
-    waitpid(item->id, NULL, 0);
+    if (item == NULL || item->id <= 0) { return; }
+    if (kill(item->id, SIGKILL) == -1) { perror ("Error killing task"); _exit(EXIT_FAILURE); }
+    if (waitpid(item->id, NULL, 0) == -1) { perror("Error waiting for task"); _exit(EXIT_FAILURE); }
     item->id = 0;
 }
 

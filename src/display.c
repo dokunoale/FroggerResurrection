@@ -47,7 +47,7 @@ void displayItem(WINDOW* win, Item *old, Item *new) {
     if (old == NULL || new == NULL) { return; }
     
     switch (old->type) {
-        case FROG: { mvwprintw(win, 0, 0, "Frog: %d %d         ", new->line, new->column);
+        case FROG: { 
             fill(win, old->line * WIN_HEIGHT_RATIO, old->column, WIN_HEIGHT_RATIO, FROG_DIM, WATER_COLOR);
             fill(win, new->line * WIN_HEIGHT_RATIO + 1, new->column, WIN_HEIGHT_RATIO - 1, FROG_DIM, FROG_COLOR);
         } break;
@@ -55,9 +55,13 @@ void displayItem(WINDOW* win, Item *old, Item *new) {
             fill(win, old->line * WIN_HEIGHT_RATIO, old->column, WIN_HEIGHT_RATIO, CROCODILE_DIM, WATER_COLOR);
             fill(win, new->line * WIN_HEIGHT_RATIO + 1, new->column, WIN_HEIGHT_RATIO - 1, CROCODILE_DIM, CROCODILE_COLOR);
         } break;
-        case BULLET: {
+        case BULLET: { mvwprintw(win, new->line * WIN_HEIGHT_RATIO, 1, "BUllet: %d  ", new->column);
             fill(win, old->line * WIN_HEIGHT_RATIO + 2, old->column, 1, BULLET_DIM, WATER_COLOR);
             fill(win, new->line * WIN_HEIGHT_RATIO + 2, new->column, 1, BULLET_DIM, BULLET_COLOR);
+        } break;
+        case GRANADE: {
+            fill(win, old->line * WIN_HEIGHT_RATIO + 2, old->column, 1, GRANADE_DIM, WATER_COLOR);
+            fill(win, new->line * WIN_HEIGHT_RATIO + 2, new->column, 1, GRANADE_DIM, FROG_COLOR);
         } break;
     }
 

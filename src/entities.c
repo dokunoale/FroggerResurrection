@@ -2,11 +2,13 @@
 
 void frog(Buffer buffer, Item item) {
     while(1) {
+        item.type = FROG;
         int c, size = readItem(&buffer, &item, REVERSE_PIPE);
         if (size != 0) { writeItem(&buffer, &item, MAIN_PIPE); continue; } 
         if ((c = getch()) == ERR) { usleep(USLEEP); continue; }
         switch (c) {
             case 'q': item.type = EXIT; break;
+            case ' ': item.type = SHOT; break;
             case KEY_UP:    if (item.line > 0) item.line -= 1; break;
             case KEY_DOWN:  if (item.line < GAME_HEIGHT - 1) item.line += 1; break;
             case KEY_RIGHT: if (item.column + FROG_DIM < GAME_WIDTH - 2) item.column += STEP; break;
