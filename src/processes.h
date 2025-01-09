@@ -60,7 +60,7 @@ Buffer newBuffer();
 void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item);
 void killTask(Item *item);
 void writeItem (Buffer *buffer, Item *item, Pipe pipe);
-void readItem (Buffer *buffer, Item *item, Pipe pipe);
+ssize_t readItem (Buffer *buffer, Item *item, Pipe pipe);
 void msleep(time_t t); // Sleeps for t milliseconds.
 
 #endif // PROCESSES_H

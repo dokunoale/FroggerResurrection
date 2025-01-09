@@ -153,34 +153,24 @@ void writeItem(Buffer *buffer, Item *item, Pipe pipe) {
  * 
  * @note Defined in processes.h
  */
-void readItem(Buffer *buffer, Item *item, Pipe pipe) {
+ssize_t readItem(Buffer *buffer, Item *item, Pipe pipe) {
     switch (pipe) {
         Item newitem;
         ssize_t size;
 
-        case MAIN_PIPE:
-            // Leggi dalla main pipe (bloccante)
+        case MAIN_PIPE: { // Leggi dalla main pipe (bloccante)
             while (read(buffer->main_pipe_fd[PIPE_READ], &newitem, sizeof(Item)) < 0) {
                 msleep(SLEEP_TIME);
                 if (errno != EINTR) _exit(EXIT_FAILURE);
             }
-            if (sizeof(newitem) == sizeof(Item)) {
-                *item = newitem;
-            }
-            break;
+            if (sizeof(newitem) == sizeof(Item)) { size = sizeof(Item); *item = newitem; }        
+        } return size;
 
-        case REVERSE_PIPE:
-            // Leggi dalla reverse pipe (non bloccante)
+        case REVERSE_PIPE: { // Leggi dalla reverse pipe (non bloccante)
             size = read(buffer->reverse_pipe_fd[PIPE_READ], &newitem, sizeof(Item));
-            if (size < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-                // Nessun dato disponibile, restituisce senza azione
-                return;
-            } else if (size == sizeof(Item)) {
-                *item = newitem;
-            } else if (size < 0) {
-                perror("Error reading from reverse pipe");
-                _exit(EXIT_FAILURE);
-            }
-            break;
+            if (size < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) { return 0; } 
+            else if (size == sizeof(Item)) { *item = newitem; } 
+            else if (size < 0) { perror("Error reading from reverse pipe"); _exit(EXIT_FAILURE); }
+        } return size;
     }
 }

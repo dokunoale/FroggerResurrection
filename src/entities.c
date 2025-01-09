@@ -2,11 +2,9 @@
 
 void frog(Buffer buffer, Item item) {
     while(1) {
-        readItem(&buffer, &item, REVERSE_PIPE); // TODO: aggiustare
-        int c;
-        while ((c = getch()) == ERR) {
-            usleep(USLEEP);
-        }
+        int c, size = readItem(&buffer, &item, REVERSE_PIPE);
+        if (size != 0) { writeItem(&buffer, &item, MAIN_PIPE); continue; } 
+        if ((c = getch()) == ERR) { usleep(USLEEP); continue; }
         switch (c) {
             case 'q': item.type = EXIT; break;
             case KEY_UP:    if (item.line > 0) item.line -= 1; break;
@@ -18,12 +16,12 @@ void frog(Buffer buffer, Item item) {
     }
 }
 
-void moveFrog(Buffer* buffer, Item* item, int direction) {
+void moveFrog(Buffer* buffer, Item item, int direction) {
     switch (direction) {
-        case RIGHT: if (item->column + FROG_DIM < GAME_WIDTH - 2) item->column += STEP; break;
-        case LEFT:  if (item->column > 1) item->column -= STEP; break;
+        case RIGHT: if (item.column + FROG_DIM < GAME_WIDTH - 2) item.column += STEP; break;
+        case LEFT:  if (item.column > 1) item.column -= STEP; break;
     }
-    writeItem(buffer, item, REVERSE_PIPE);
+    writeItem(buffer, &item, REVERSE_PIPE);
 }
 
 void crocodile(Buffer buffer, Item item) {

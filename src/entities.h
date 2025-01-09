@@ -4,7 +4,7 @@
 #include "utils.h"
 
 void frog(Buffer buffer, Item item);
-void moveFrog(Buffer* buffer, Item* item, int direction);
+void moveFrog(Buffer* buffer, Item item, int direction);
 void crocodile(Buffer buffer, Item item);
 void bullet(Buffer buffer, Item item);
 

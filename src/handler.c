@@ -10,14 +10,14 @@ int direction(int line, int dir) { return dir ? line % 2 : (line + 1) % 2; }
 int out_of_bounds(Item* item) {
     switch (item->direction) {
         case RIGHT: return item->column >= GAME_WIDTH; break;
-        case LEFT:  return item->column + item->dimension <= 1; break;
+        case LEFT:  return item->column + item->dimension <= 0; break;
         default:    return 0;
     }
 }
 
 // Checks if any item is above anotherone.
 int is_above(Item* top, Item* bottom) {
-    return (top->line == bottom->line) && (top->column >= bottom->column) && (top->column <= bottom->column + (int)bottom->dimension);
+    return (top->line == bottom->line) && (top->column >= bottom->column) && (top->column + (int)bottom->dimension <= bottom->column + (int)bottom->dimension);
 }
 
 // Checks if there is an item above an stream of Item (array) and returns the pointer to the item below.
@@ -220,8 +220,7 @@ void manche(WINDOW* win) {
 
                 *stored = receveid;
                 if (is_above(&frog_item, stored)) { 
-                    // moveFrog(&buffer, &frog_item, flow->direction);
-                    displayItem(win, &frog_item, &frog_item); 
+                    moveFrog(&buffer, frog_item, flow->direction);
                 }
                 if (out_of_bounds(&receveid)) { killTask(stored); } 
                 else if (bullet_check(flow)) { shot(flow, &buffer, stored); }
