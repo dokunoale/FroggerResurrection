@@ -9,9 +9,13 @@ void frog(Buffer buffer, Item item) {
         switch (c) {
             case 'q': item.type = EXIT; break;
             case ' ': item.type = SHOT; break;
+            case 'W':; case 'w':;
             case KEY_UP:    if (item.line > 0) item.line -= 1; break;
+            case 'S':; case 's':;
             case KEY_DOWN:  if (item.line < GAME_HEIGHT - 1) item.line += 1; break;
+            case 'D':; case 'd':;
             case KEY_RIGHT: if (item.column + FROG_DIM < GAME_WIDTH - 2) item.column += STEP; break;
+            case 'A':; case 'a':;
             case KEY_LEFT:  if (item.column > 1)  item.column-= STEP; break;
         }
         writeItem(&buffer, &item, MAIN_PIPE);
