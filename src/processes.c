@@ -154,7 +154,7 @@ ssize_t readItem(Buffer *buffer, Item *item, Pipe pipe) {
 
         case MAIN_PIPE: { // Leggi dalla main pipe (bloccante)
             while (read(buffer->main_pipe_fd[PIPE_READ], &newitem, sizeof(Item)) < 0) {
-                msleep(SLEEP_TIME);
+                usleep(SLEEP_TIME);
                 if (errno != EINTR) _exit(EXIT_FAILURE);
             }
             if (sizeof(newitem) == sizeof(Item)) { size = sizeof(Item); *item = newitem; }        
