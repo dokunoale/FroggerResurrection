@@ -27,7 +27,7 @@
 #define MAX_SPEED 4 // velocità massima del flusso: influisce sulla usleep
 #define BULLET_SPEED 3 // velocità del proiettile
 #define GRANADE_SPEED (BULLET_SPEED) // velocità della granata
-#define TIMER_SPEED 30 // velocità del timer
+#define TIMER_SPEED 60 // velocità del timer
 
 /**
  * @note WIN_RATIO is the ratio between the game matrix and the screen.
