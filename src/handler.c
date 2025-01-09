@@ -17,7 +17,7 @@ int out_of_bounds(Item* item) {
 
 // Checks if any item is above anotherone.
 int is_above(Item* top, Item* bottom) {
-    return (top->line == bottom->line) && (top->column >= bottom->column) && (top->column + (int)bottom->dimension <= bottom->column + (int)bottom->dimension);
+    return (top->line == bottom->line) && (top->column >= bottom->column) && (top->column + (int)top->dimension <= bottom->column + (int)bottom->dimension);
 }
 
 // Checks if there is an item above an stream of Item (array) and returns the pointer to the item below.
