@@ -1,6 +1,7 @@
 #include "entities.h"
 
 void frog(Buffer buffer, Item item) {
+    writeItem(&buffer, &item, MAIN_PIPE);
     while(1) {
         item.type = FROG;
         int c, size = readItem(&buffer, &item, REVERSE_PIPE);
@@ -49,5 +50,14 @@ void bullet(Buffer buffer, Item item) {
         }
         writeItem(&buffer, &item, MAIN_PIPE);
         usleep(item.speed * USLEEP);
+    }
+}
+
+void timer(Buffer buffer, Item item) {
+    while(1) {
+        usleep(item.speed * USLEEP);
+        if (item.column > 1 ) item.column -= 1;
+        else item.type = LOSE;
+        writeItem(&buffer, &item, MAIN_PIPE);
     }
 }

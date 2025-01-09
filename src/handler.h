@@ -4,6 +4,6 @@
 #include "display.h"
 #include "entities.h"
 
-void manche(WINDOW *game_win);
+void game();
 
 #endif //HANDLER_H

@@ -26,6 +26,7 @@ Item* is_above_any(Item* item, Item* stream) {
     switch (stream->type) {
         case CROCODILE: max = CROCODILE_MAX_NUM; break;
         case BULLET: max = BULLET_MAX_NUM; break;
+        case DEN: max = 5; break;
         default: return NULL;
     }
     for (unsigned int i = 0; i < max; i++) {
@@ -171,6 +172,46 @@ Item new_granade(Buffer* buffer, Item* source, int direction) {
     return item;
 }
 
+Item new_den(int index) {
+    Item item = (Item){
+        .line = 0,
+        .column = ((index * 3) - 2) * WIN_WIDTH_RATIO,
+        .type = DEN,
+        .dimension = FROG_DIM,
+        .speed = 0,
+        .direction = 0,
+        .id = 1
+    };
+    return item;
+}
+
+Item new_heart(int index) {
+    Item item = (Item){
+        .line = 0,
+        .column = index * WIN_WIDTH_RATIO,
+        .type = HEART,
+        .dimension = HEART_DIM,
+        .speed = 0,
+        .direction = 0,
+        .id = 1
+    };
+    return item;
+}
+
+Item new_timer(Buffer* buffer) {
+    Item item = (Item){
+        .line = 0,
+        .column = TIMER_START,
+        .type = TIMER,
+        .dimension = 1,
+        .speed = TIMER_SPEED,
+        .direction = LEFT,
+        .id = 0
+    };
+    newTask(buffer, &timer, &item);
+    return item;
+}
+
 // Checks if there is any crocodile in the boundaries. Returns FALSE if there is.
 int boundary_check(Flow* flow, int odds) {
     for (unsigned int i = 0; i < CROCODILE_MAX_NUM; i++) {
@@ -216,12 +257,16 @@ void frog_shot(Flow* flow, Buffer* buffer, Item* item) {
  * Manages the game.
  * @note Defined in handler.h
  */
-void manche(WINDOW* win) {
+int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
     srand(time(NULL));
     Buffer buffer = newBuffer();
     Flow* flows = new_flows();
+    
+    for (int i = 0; i < DEN_NUM; i++) { if (den[i].id != 0) displayItem(win, &den[i], &den[i]); }
     Item frog_item = new_frog(&buffer);
+    new_timer(&buffer); displayTimer(timer_win);
 
+    int exit_status = FROG;
     while(1) {
         Item receveid;
         readItem(&buffer, &receveid, MAIN_PIPE);
@@ -232,8 +277,14 @@ void manche(WINDOW* win) {
         
         switch (receveid.type) {
             case FROG: {
-                if (receveid.line <= DEN_HEIGHT || receveid.line >= DEN_HEIGHT + NUM_FLOWS) { /* do nothing */ }
-                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { receveid.type = EXIT; break; }
+                if (receveid.line == 0) { 
+                    Item* reached = is_above_any(&receveid, den);
+                    if (reached == NULL) { exit_status = LOSE; break; }
+                    else { reached->id = 0; exit_status = WIN; displayItem(win, &frog_item, &receveid); break; }
+                }
+                if (receveid.line >= DEN_HEIGHT + NUM_FLOWS ||receveid.line <= DEN_HEIGHT) { /* do nothing */ }
+                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; break; }
+
                 displayItem(win, &frog_item, &receveid);
                 frog_item = receveid;
             } break;
@@ -253,7 +304,7 @@ void manche(WINDOW* win) {
                 Item* stored = get_item(flow, &receveid);
                 displayItem(win, stored, &receveid);
 
-                if (is_above(&receveid, &frog_item)) { receveid.type = EXIT; break; }
+                if (is_above(&receveid, &frog_item)) { exit_status = LOSE; break; }
 
                 *stored = receveid;
                 if (out_of_bounds(&receveid)) { killTask(stored); }
@@ -274,13 +325,47 @@ void manche(WINDOW* win) {
                 if (out_of_bounds(&receveid)) { killTask(stored); }
             } break;
 
-            case EXIT:
-                break;
+            case TIMER: { displayItem(timer_win, &receveid, &receveid); } break;
+            case LOSE: exit_status = LOSE; break;
+            case EXIT: exit_status = EXIT; break;
         }
 
-        if (receveid.type == EXIT) { break; }
+        if (exit_status == EXIT || exit_status == WIN || exit_status == LOSE) { break; }
     }
 
     free_flows(flows);
     killTask(&frog_item);
+    return exit_status;
+}
+
+void game() {
+    WINDOW* timer_win = newwin(WIN_TIMER_HEIGHT, WIN_TIMER_WIDTH, 1, 1);
+    WINDOW* game_win = newwin(WIN_GAME_HEIGHT, WIN_GAME_WIDTH, WIN_TIMER_HEIGHT + 1, 1); 
+    WINDOW* info_win = newwin(WIN_INFO_HEIGHT, WIN_INFO_WIDTH, WIN_GAME_HEIGHT + WIN_TIMER_HEIGHT + 1, 1);
+    wrefresh(game_win); wbkgd(game_win, COLOR_PAIR(WATER_COLOR)); wrefresh(game_win);
+
+    Item den[DEN_NUM] = { new_den(1), new_den(2), new_den(3), new_den(4), new_den(5) };
+    Item hearts[LIFES] = { new_heart(1), new_heart(2), new_heart(3), new_heart(4), new_heart(5) };
+
+    int lifes = LIFES;
+    int reached = 0;
+    int score = 0;
+
+    while(lifes > 0 && reached < DEN_NUM) {
+        wclear(game_win); wclear(info_win); wrefresh(game_win); wrefresh(info_win);
+        for (int i = 0; i < lifes; i++) { displayItem(info_win, &hearts[i], &hearts[i]); }
+        displayScore(info_win, score);
+
+        time_t start_time = time(NULL); 
+        int status = manche(game_win, timer_win, den);
+        time_t end_time = time(NULL); 
+
+        int time_spent = (int)difftime(end_time, start_time);
+        
+        switch (status) {
+            case EXIT: return;
+            case LOSE: lifes--; break;
+            case WIN:  if (time_spent < BASE_SCORE) { score += ((BASE_SCORE - time_spent) * lifes); }; reached++; break;
+        }
+    }
 }

@@ -16,10 +16,14 @@ enum colors {
     FROG_COLOR, 
     CROCODILE_COLOR, 
     BULLET_COLOR,
+    DEN_COLOR,
+    TEXT,
     RESERVED
 };
 
 void initDisplay();
+void displayTimer(WINDOW* win);
+void displayScore(WINDOW* win, int score);
 void displayItem(WINDOW* win, Item* old, Item* new);
 
 #endif // DISPLAY_H
