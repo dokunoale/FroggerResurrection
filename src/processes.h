@@ -11,15 +11,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-#ifndef usleep
-#define usleep(microseconds) do {                      \
-    struct timespec ts;                                \
-    ts.tv_sec = (microseconds) / 1000000;              \
-    ts.tv_nsec = ((microseconds) % 1000000) * 1000;    \
-    nanosleep(&ts, NULL);                              \
-} while (0)
-#endif
-
 typedef struct {
     pid_t *list;
     int length;

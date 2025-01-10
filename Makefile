@@ -6,8 +6,8 @@ OBJ_DIR = obj
 BIN_DIR = bin
 
 # File sorgenti e oggetti
-SRC = $(wildcard $(SRC_DIR)/*.c)
-# SRC = $(SRC_DIR)/main.c $(SRC_DIR)/display.c
+# SRC = $(wildcard $(SRC_DIR)/*.c)
+SRC = $(SRC_DIR)/processes.c $(SRC_DIR)/entities.c $(SRC_DIR)/display.c $(SRC_DIR)/handler.c $(SRC_DIR)/main.c
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Target finale
