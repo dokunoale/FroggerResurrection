@@ -72,7 +72,7 @@ Flow* new_flows() {
         Flow flow = (Flow){
             .line = i + DEN_HEIGHT,
             .direction = direction(i, draw),
-            .speed = MIN_SPEED + rand() % (MIN_SPEED - MAX_SPEED + 1),
+            .speed = choose(MAX_SPEED, MIN_SPEED),
             .crocodiles = crocodiles,
             .bullets = bullets,
             .granades = granades
@@ -149,7 +149,7 @@ Item new_bullet(Buffer* buffer, Item* source) {
 Item new_granade(Buffer* buffer, Item* source, int direction) {
     Item item = (Item){
         .line = source->line,
-        .column = direction == RIGHT ? source->column + CROCODILE_DIM : source->column - BULLET_DIM,
+        .column = direction == RIGHT ? source->column + FROG_DIM : source->column - BULLET_DIM,
         .type = GRANADE,
         .dimension = GRANADE_DIM,
         .speed = GRANADE_SPEED,
@@ -295,8 +295,10 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
                 displayItem(win, stored, &receveid);
 
                 if (is_above(&receveid, &frog_item)) { exit_status = LOSE; break; }
+                Item* collided = is_above_any(&receveid, flow->granades);
 
                 *stored = receveid;
+                if (collided != NULL) { killTask(collided); killTask(stored); break; }
                 if (out_of_bounds(&receveid)) { killTask(stored); }
             } break;
 

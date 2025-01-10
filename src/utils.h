@@ -24,9 +24,9 @@
 #define GRANADE_MAX_NUM 2 // Numero massimo di granate per flusso - NOTA: NON MODIFICARE
 #define DEN_NUM 5 // Numero di tane
 
-#define MIN_SPEED 10 // velocità minima del flusso: influisce sulla usleep
-#define MAX_SPEED 4 // velocità massima del flusso: influisce sulla usleep
-#define BULLET_SPEED 3 // velocità del proiettile
+#define MIN_SPEED 8 // 10 // velocità minima del flusso: influisce sulla usleep
+#define MAX_SPEED 8 // 6 // velocità massima del flusso: influisce sulla usleep
+#define BULLET_SPEED 5 // velocità del proiettile
 #define GRANADE_SPEED (BULLET_SPEED) // velocità della granata
 #define TIMER_SPEED 60 // velocità del timer
 
