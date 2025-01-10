@@ -61,21 +61,6 @@ Item* get_item(Flow* flow, Item* item) {
     return NULL;
 }
 
-// Returns the pointer to a random crocodile in the Flow.
-Item* random_crocodile(Flow* flow) {
-    Item* crocodiles = (Item*)calloc(CROCODILE_MAX_NUM, sizeof(Item));
-    unsigned int availables = 0;
-    for (unsigned int i = 0; i < CROCODILE_MAX_NUM; i++) {
-        if (flow->crocodiles[i].id != 0) {
-            crocodiles[i] = flow->crocodiles[i];
-            availables++;
-        }
-    }
-    Item* choose = &crocodiles[rand() % availables];
-    free(crocodiles);
-    return choose;
-}
-
 // Returns a new array of flows.
 Flow* new_flows() {
     Flow* flows = (Flow*)malloc(sizeof(Flow) * NUM_FLOWS);
