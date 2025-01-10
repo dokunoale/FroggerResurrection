@@ -1,17 +1,8 @@
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <unistd.h>
+
 #include "processes.h"
 #include "utils.h"
-
-// Sleep time for the reverse pipe
-void msleep(time_t msec) {
-    for(int dec = 0; dec < MSLEEP_INTEVAL; dec++) {
-        usleep(msec * MSEC_IN_SEC / MSLEEP_INTEVAL);
-    }
-}
 
 // Initializes a PID list. @note Defined in processes.c
 void init_pidlist(PidList *pid_list) {
@@ -166,7 +157,7 @@ ssize_t readItem(Buffer *buffer, Item *item, Pipe pipe) {
 
         case MAIN_PIPE: { // Leggi dalla main pipe (bloccante)
             while (read(buffer->main_pipe_fd[PIPE_READ], &newitem, sizeof(Item)) < 0) {
-                usleep(SLEEP_TIME);
+                usleep(3);
                 if (errno != EINTR) _exit(EXIT_FAILURE);
             }
             if (sizeof(newitem) == sizeof(Item)) { size = sizeof(Item); *item = newitem; }        

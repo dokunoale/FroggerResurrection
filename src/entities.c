@@ -8,7 +8,7 @@ void frog(Buffer buffer, Item item) {
         item.type = FROG;
         int c, size = readItem(&buffer, &item, REVERSE_PIPE);
         if (size != 0) { writeItem(&buffer, &item, MAIN_PIPE); continue; } 
-        if ((c = getch()) == ERR) { msleep(USLEEP); continue; }
+        if ((c = getch()) == ERR) { usleep(USLEEP); continue; }
         switch (c) {
             case 'q': item.type = EXIT; break;
             case ' ': item.type = SHOT; break;
@@ -40,7 +40,7 @@ void crocodile(Buffer buffer, Item item) {
             case LEFT:  item.column -= STEP; break;
         }
         writeItem(&buffer, &item, MAIN_PIPE);
-        msleep(item.speed * USLEEP);
+        usleep(item.speed * USLEEP);
     }
 }
 
@@ -51,13 +51,13 @@ void bullet(Buffer buffer, Item item) {
             case LEFT:  item.column -= STEP; break;
         }
         writeItem(&buffer, &item, MAIN_PIPE);
-        msleep(item.speed * USLEEP);
+        usleep(item.speed * USLEEP);
     }
 }
 
 void timer(Buffer buffer, Item item) {
     while(1) {
-        msleep(item.speed * USLEEP);
+        usleep(item.speed * USLEEP);
         if (item.column > 1 ) item.column -= 1;
         else item.type = LOSE;
         writeItem(&buffer, &item, MAIN_PIPE);
