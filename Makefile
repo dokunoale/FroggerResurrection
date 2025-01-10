@@ -1,6 +1,6 @@
 # Variabili
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -D_POSIX_C_SOURCE=200809L gcc -D_BSD_SOURCE
+CFLAGS = -Wall -Wextra -std=c11 -D_POSIX_C_SOURCE=200809L gcc -D_DEFAULT_SOURCE
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin

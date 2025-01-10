@@ -4,8 +4,6 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
-#define _BSD_SOURCE
 #include <unistd.h>
 
 #define MSLEEP_INTEVAL 100
