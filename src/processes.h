@@ -1,6 +1,8 @@
 #ifndef PROCESSES_H
 #define PROCESSES_H
 
+#define _XOPEN_SOURCE 500
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
