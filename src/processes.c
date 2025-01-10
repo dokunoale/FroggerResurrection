@@ -2,8 +2,16 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "processes.h"
 #include "utils.h"
+
+// Sleep time for the reverse pipe
+void msleep(time_t msec) {
+    for(int dec = 0; dec < MSLEEP_INTEVAL; dec++) {
+        usleep(msec * MSEC_IN_SEC / MSLEEP_INTEVAL);
+    }
+}
 
 // Initializes a PID list. @note Defined in processes.c
 void init_pidlist(PidList *pid_list) {

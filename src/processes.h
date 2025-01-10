@@ -1,10 +1,9 @@
 #ifndef PROCESSES_H
 #define PROCESSES_H
 
+#include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <signal.h>
-#include <fcntl.h>
 
 typedef struct {
     pid_t *list;
@@ -73,5 +72,6 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item);
 void killTask(Item *item);
 void writeItem (Buffer *buffer, Item *item, Pipe pipe);
 ssize_t readItem (Buffer *buffer, Item *item, Pipe pipe);
+void msleep(time_t msec);
 
 #endif // PROCESSES_H
