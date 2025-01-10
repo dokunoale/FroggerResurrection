@@ -307,6 +307,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
 
             case GRANADE: {
                 Item* stored = get_item(flow, &receveid);
+                if (stored == NULL) { break; }
                 Item* collided = is_above_any(&receveid, flow->bullets);
                 displayItem(win, stored, &receveid);
 
