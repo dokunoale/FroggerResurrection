@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+#define _DEFAULT_SOURCE
 #include <unistd.h>
 
 #include "processes.h"
