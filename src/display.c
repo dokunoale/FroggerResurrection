@@ -1,9 +1,5 @@
-/**
- * @file display.c
- * @brief Contains the functions for the display of the game.
- */
 #include "display.h"
-#include <locale.h>
+#include "utils.h"
 
 void initDisplay() {
     setlocale(LC_ALL, "");

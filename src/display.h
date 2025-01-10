@@ -1,7 +1,9 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "entities.h"
+#include "processes.h"
+#include <ncurses.h>
+#include <locale.h>
 
 // Ncurses constants
 #define NO_CURSOR 0

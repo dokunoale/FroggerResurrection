@@ -1,5 +1,4 @@
 #include "processes.h"
-#include <fcntl.h>
 
 // Initializes a PID list. @note Defined in processes.c
 void init_pidlist(PidList *pid_list) {

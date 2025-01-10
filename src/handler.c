@@ -1,3 +1,6 @@
+#include "utils.h"
+#include "display.h"
+#include "entities.h"
 #include "handler.h"
 
 // Returns a random number between min and max

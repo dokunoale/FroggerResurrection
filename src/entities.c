@@ -1,4 +1,6 @@
 #include "entities.h"
+#include "utils.h"
+#include "display.h"
 
 void frog(Buffer buffer, Item item) {
     writeItem(&buffer, &item, MAIN_PIPE);
