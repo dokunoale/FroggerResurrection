@@ -5,6 +5,8 @@ SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
 
+VERBOSE = true
+
 # File sorgenti e oggetti
 # SRC = $(wildcard $(SRC_DIR)/*.c)
 SRC = $(SRC_DIR)/processes.c $(SRC_DIR)/entities.c $(SRC_DIR)/display.c $(SRC_DIR)/handler.c $(SRC_DIR)/main.c
@@ -23,6 +25,7 @@ $(TARGET): $(OBJ)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
+	@echo "Compilazione $<"
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)

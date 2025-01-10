@@ -91,7 +91,7 @@ Buffer newBuffer() {
     }
 
     // Inizializza la lista dei PID
-    init_pidlist(&buffer.pid_list);
+    // init_pidlist(&buffer.pid_list);
 
     return buffer;
 }
@@ -103,7 +103,7 @@ Buffer newBuffer() {
  */
 void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
     pid_t pid = fork();
-    if (pid < 0) { perror("fork failed"); signal_all(&buffer->pid_list, SIGKILL); _exit(EXIT_FAILURE); }
+    // if (pid < 0) { perror("fork failed"); signal_all(&buffer->pid_list, SIGKILL); _exit(EXIT_FAILURE); }
     if (pid == 0) { // Child process
         close(buffer->main_pipe_fd[PIPE_READ]); close(buffer->reverse_pipe_fd[PIPE_WRITE]);
         item->id = getpid(); 
@@ -112,7 +112,7 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
         _exit(EXIT_SUCCESS);
     } else { // Parent process
         item->id = pid; 
-        add_pid(&buffer->pid_list, item->id);
+        // add_pid(&buffer->pid_list, item->id);
     }
 }
 
