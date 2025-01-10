@@ -2,7 +2,6 @@
 #define UTILS_H
 
 #include <ncurses.h>
-#include <time.h>
 #include "processes.h"
 
 #define USLEEP 6000 

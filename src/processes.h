@@ -1,16 +1,24 @@
 #ifndef PROCESSES_H
 #define PROCESSES_H
 
-#define _XOPEN_SOURCE 500
-
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <signal.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+
+#ifndef usleep
+#define usleep(microseconds) do {                      \
+    struct timespec ts;                                \
+    ts.tv_sec = (microseconds) / 1000000;              \
+    ts.tv_nsec = ((microseconds) % 1000000) * 1000;    \
+    nanosleep(&ts, NULL);                              \
+} while (0)
+#endif
 
 typedef struct {
     pid_t *list;
