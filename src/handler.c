@@ -279,6 +279,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
 
             case CROCODILE: {
                 Item* stored = get_item(flow, &receveid);
+                if (stored == NULL) { break; }
                 displayItem(win, stored, &receveid);
 
                 *stored = receveid;
@@ -290,6 +291,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
 
             case BULLET: {
                 Item* stored = get_item(flow, &receveid);
+                if (stored == NULL) { break; }
                 displayItem(win, stored, &receveid);
 
                 if (is_above(&receveid, &frog_item)) { exit_status = LOSE; break; }
