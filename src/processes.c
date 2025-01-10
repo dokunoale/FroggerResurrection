@@ -1,5 +1,8 @@
 #include <signal.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include "processes.h"
 #include "utils.h"
