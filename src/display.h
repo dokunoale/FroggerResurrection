@@ -13,19 +13,65 @@
 #define FROG_SYM        'F'
 #define CROCODILE_SYM   'C'
 
+
+static const char *frog_sprite[4] = {
+    "▄ ▄██▄ ▄",
+    "▀██████▀",
+    "▄█▀██▀█▄",
+    "▀      ▀"
+};
+
+static const char *den_sprite[5] = {
+    "  ▄▄▄▄  ",
+    "▄███▀   ",
+    "███▄▄▄██",
+    "▀██████▀",
+    "  ▀▀▀▀  "
+};
+
+static const char *numbers[10][2] = {
+    {"█▀█", "█▄█"}, // Zero
+    {"  █", "  █"}, // One
+    {"▀▀█", "█▄▄"}, // Two
+    {"▀█▀", "▄▄▀"}, // Three
+    {"█ ▄", "▀▀█"}, // Four
+    {"█▀▀", "▄▄█"}, // Five
+    {"█▄▄", "█▄█"}, // Six
+    {"▀▀█", " █ "}, // Seven
+    {"█▀█", "█▀█"}, // Eight
+    {"█▀█", "▀▀█"}  // Nine
+};
+
+static const char *heart[2] = { "▄ ▄", "▀█▀" };
+
+static const char *you_win[2] = { 
+    "         █ █ █▀█ █ █     █ █ █ █▀█ █▀█   ", 
+    "          █  █▄█ █▄█     █▄█▄█ █▄█ █ █   " 
+};
+static const char *game_over[2] = { 
+    "      █▀▀ █▀█ █▀▄▀█ ███   █▀█ █ █ ███ █▀█",
+    "      █▄█ █▀█ █ ▀ █ █▄▄   █▄█ ▀▄▀ █▄▄ █▀▄ "
+};
+
 enum colors { 
     WATER_COLOR = 100, 
     FROG_COLOR, 
     CROCODILE_COLOR, 
     BULLET_COLOR,
     DEN_COLOR,
-    TEXT,
+    TEXT_COLOR,
+    SCORE_COLOR,
+    HEART_COLOR,
+    FULL_BLACK_COLOR,
     RESERVED
 };
 
 void initDisplay();
+void fill(WINDOW *win, int line, int column, int height, int width, int color);
 void displayTimer(WINDOW* win);
-void displayScore(WINDOW* win, int score);
+void displayScore(WINDOW* win, int score, int line, int column);
 void displayItem(WINDOW* win, Item* old, Item* new);
+void displayHearts(WINDOW* win, int lifes);
+void displayEnd(WINDOW* win, int status);
 
 #endif // DISPLAY_H

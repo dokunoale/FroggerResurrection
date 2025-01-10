@@ -24,9 +24,9 @@
 #define GRANADE_MAX_NUM 2 // Numero massimo di granate per flusso - NOTA: NON MODIFICARE
 #define DEN_NUM 5 // Numero di tane
 
-#define MIN_SPEED 8 // 10 // velocità minima del flusso: influisce sulla usleep
-#define MAX_SPEED 8 // 6 // velocità massima del flusso: influisce sulla usleep
-#define BULLET_SPEED 5 // velocità del proiettile
+#define MIN_SPEED 10 // velocità minima del flusso: influisce sulla usleep
+#define MAX_SPEED 6 // velocità massima del flusso: influisce sulla usleep
+#define BULLET_SPEED 4 // velocità del proiettile
 #define GRANADE_SPEED (BULLET_SPEED) // velocità della granata
 #define TIMER_SPEED 60 // velocità del timer
 
@@ -63,9 +63,15 @@ typedef enum type { LOSE = 0, WIN, FROG, CROCODILE, BULLET, GRANADE, SHOT, DEN, 
 #define WIN_GAME_WIDTH      (15 * WIN_WIDTH_RATIO)
 #define WIN_TIMER_HEIGHT    (WIN_HEIGHT_RATIO)
 #define WIN_TIMER_WIDTH     (WIN_GAME_WIDTH)
-#define WIN_INFO_HEIGHT     (WIN_HEIGHT_RATIO)
+#define WIN_INFO_HEIGHT     (WIN_HEIGHT_RATIO - 1)
 #define WIN_INFO_WIDTH      (WIN_GAME_WIDTH) 
-#define WIN_MAIN_HEIGHT     ((WIN_GAME_HEIGHT) + (WIN_INFO_HEIGHT) + (BOX_BORDER))
+#define WIN_MAIN_HEIGHT     ((WIN_GAME_HEIGHT) + (WIN_INFO_HEIGHT) + (WIN_TIMER_HEIGHT) + (BOX_BORDER))
 #define WIN_MAIN_WIDTH      ((WIN_GAME_WIDTH) + (BOX_BORDER))
+#define WIN_END_HEIGHT      (2 * WIN_HEIGHT_RATIO)
+#define WIN_END_WIDTH       (6 * WIN_WIDTH_RATIO)
+
+#define SCORE_INFO          (WIN_INFO_WIDTH - 20)
+#define HEART_INFO          (5)
+
 
 #endif // UTILS_H

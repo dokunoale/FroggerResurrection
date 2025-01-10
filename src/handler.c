@@ -18,9 +18,9 @@ int out_of_bounds(Item* item) {
     }
 }
 
-// Checks if any item is above anotherone.
-int is_above(Item* top, Item* bottom) {
-    return (top->line == bottom->line) && (top->column >= bottom->column) && (top->column + (int)top->dimension <= bottom->column + (int)bottom->dimension);
+// Checks if any item is above another one.
+int is_above(Item* item, Item* other) {
+    return (item->line == other->line) && (item->column >= other->column) && (item->column + (int)item->dimension <= other->column + (int)other->dimension);
 }
 
 // Checks if there is an item above an stream of Item (array) and returns the pointer to the item below.
@@ -34,6 +34,26 @@ Item* is_above_any(Item* item, Item* stream) {
     }
     for (unsigned int i = 0; i < max; i++) {
         if (stream[i].id != 0 && is_above(item, &stream[i])) { return &stream[i]; }
+    }
+    return NULL;
+}
+
+// Check if any item collides with another one. TODO: modificare
+int is_colliding(Item* item, Item* other) {
+    return (item->line == other->line) && (item->column >= other->column) && (item->column <= other->column + (int)other->dimension);
+}
+
+// Check if any item collides with another stream of Item (array) and returns the pointer to the item below.
+Item* is_colliding_any(Item* item, Item* stream) {
+    unsigned int max;
+    switch (stream->type) {
+        case CROCODILE: max = CROCODILE_MAX_NUM; break;
+        case BULLET: max = BULLET_MAX_NUM; break;
+        case DEN: max = 5; break;
+        default: return NULL;
+    }
+    for (unsigned int i = 0; i < max; i++) {
+        if (stream[i].id != 0 && is_colliding(item, &stream[i])) { return &stream[i]; }
     }
     return NULL;
 }
@@ -173,19 +193,6 @@ Item new_den(int index) {
     return item;
 }
 
-Item new_heart(int index) {
-    Item item = (Item){
-        .line = 0,
-        .column = index * WIN_WIDTH_RATIO,
-        .type = HEART,
-        .dimension = HEART_DIM,
-        .speed = 0,
-        .direction = 0,
-        .id = 1
-    };
-    return item;
-}
-
 Item new_timer(Buffer* buffer) {
     Item item = (Item){
         .line = 0,
@@ -310,7 +317,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
             case GRANADE: {
                 Item* stored = get_item(flow, &receveid);
                 if (stored == NULL) { break; }
-                Item* collided = is_above_any(&receveid, flow->bullets);
+                Item* collided = is_colliding_any(&receveid, flow->bullets);
                 displayItem(win, stored, &receveid);
 
                 *stored = receveid;
@@ -338,16 +345,19 @@ void game() {
     wrefresh(game_win); wbkgd(game_win, COLOR_PAIR(WATER_COLOR)); wrefresh(game_win);
 
     Item den[DEN_NUM] = { new_den(1), new_den(2), new_den(3), new_den(4), new_den(5) };
-    Item hearts[LIFES] = { new_heart(1), new_heart(2), new_heart(3), new_heart(4), new_heart(5) };
 
     int lifes = LIFES;
     int reached = 0;
     int score = 0;
 
-    while(lifes > 0 && reached < DEN_NUM) {
+    while(lifes >= 0 && reached < DEN_NUM) {
         wclear(game_win); wclear(info_win); wrefresh(game_win); wrefresh(info_win);
-        for (int i = 0; i < lifes; i++) { displayItem(info_win, &hearts[i], &hearts[i]); }
-        displayScore(info_win, score);
+        
+        fill(game_win, WIN_HEIGHT_RATIO + 1, 0, WIN_HEIGHT_RATIO - 1, WIN_GAME_WIDTH, CROCODILE_COLOR);
+        fill(game_win, (NUM_FLOWS + DEN_HEIGHT) *  WIN_HEIGHT_RATIO + 1, 0, WIN_HEIGHT_RATIO - 1, WIN_GAME_WIDTH, CROCODILE_COLOR);
+        wrefresh(game_win);
+        displayHearts(info_win, lifes);
+        displayScore(info_win, score, 1, SCORE_INFO);
 
         time_t start_time = time(NULL); 
         int status = manche(game_win, timer_win, den);
@@ -358,7 +368,14 @@ void game() {
         switch (status) {
             case EXIT: return;
             case LOSE: lifes--; break;
-            case WIN:  if (time_spent < BASE_SCORE) { score += ((BASE_SCORE - time_spent) * lifes); }; reached++; break;
+            case WIN:  if (time_spent < BASE_SCORE) { score += ((BASE_SCORE - time_spent) * (lifes + 1)); }; reached++; break;
         }
     }
+
+    WINDOW* end_win = newwin(WIN_END_HEIGHT, WIN_END_WIDTH, (WIN_GAME_HEIGHT + WIN_END_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_END_WIDTH) / 2);
+    box(end_win, 0, 0); wrefresh(end_win); displayScore(end_win, score, 6, 17);
+    if (reached == DEN_NUM) { displayEnd(end_win, WIN); }
+    else { displayEnd(end_win, LOSE); }
+    char stop; while ((stop = getch()) == ERR) { usleep(USLEEP); }
+    delwin(end_win);
 }
