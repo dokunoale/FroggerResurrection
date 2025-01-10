@@ -1,6 +1,6 @@
 # Variabili
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -D_POSIX_C_SOURCE=200809L
+CFLAGS = -Wall -Wextra -std=c11 -D_POSIX_C_SOURCE=200809L -Wno-deprecated-declarations
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
