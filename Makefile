@@ -1,6 +1,6 @@
 # Variabili
 CC = gcc
-CFLAGS = -fdiagnostics-color=always -Wall -std=c99
+CFLAGS = -Wall -Wextra -std=c11 -D_POSIX_C_SOURCE=200809L
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
