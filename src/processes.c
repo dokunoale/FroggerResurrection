@@ -172,5 +172,7 @@ ssize_t readItem(Buffer *buffer, Item *item, Pipe pipe) {
             else if (size == sizeof(Item)) { *item = newitem; } 
             else if (size < 0) { perror("Error reading from reverse pipe"); _exit(EXIT_FAILURE); }
         } return size;
+
+        default: return 0;
     }
 }

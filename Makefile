@@ -1,6 +1,6 @@
 # Variabili
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11
+CFLAGS = -std=c11
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
