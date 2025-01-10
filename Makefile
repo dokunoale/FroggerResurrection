@@ -1,11 +1,9 @@
 # Variabili
 CC = gcc
-CFLAGS = -std=c11
+CFLAGS = -fdiagnostics-color=always -Wall -Wextra -std=c11
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
-
-VERBOSE = true
 
 # File sorgenti e oggetti
 # SRC = $(wildcard $(SRC_DIR)/*.c)
@@ -20,12 +18,11 @@ all: $(TARGET)
 
 $(TARGET): $(OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lncurses -g
+	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lncursesw -g
 	rm -rf $(OBJ_DIR)/*
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
-	@echo "Compilazione $<"
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)
