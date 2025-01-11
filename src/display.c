@@ -41,14 +41,14 @@ static const char *wave_right_sprite[8][24] = {
 static const char *frog_sprite[4] = {
     "▄ ▄██▄ ▄",
     "▀██████▀",
-    "▄█▀██▀█▄",
+    "▄█▀▀▀▀█▄",
     "▀      ▀"
 };
 
 static const char *den_sprite[5] = {
     "  ▄▄▄▄  ",
     "▄███▀   ",
-    "███▄▄▄██",
+    "████▄▄██",
     "▀██████▀",
     "  ▀▀▀▀  "
 };
