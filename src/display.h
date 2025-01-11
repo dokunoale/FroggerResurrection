@@ -22,6 +22,7 @@ enum colors {
     SCORE_COLOR,
     HEART_COLOR,
     FULL_BLACK_COLOR,
+    DROWNED_COLOR,
     WAVE_COLOR,
     RESERVED
 };
@@ -35,5 +36,6 @@ void displayScore(WINDOW* win, int score, int line, int column);
 void displayItem(WINDOW* win, Item* old, Item* new);
 void displayHearts(WINDOW* win, int lifes);
 void displayEnd(WINDOW* win, int status);
+void displayDeath(WINDOW* win, Item* old, Item* new);
 
 #endif // DISPLAY_H

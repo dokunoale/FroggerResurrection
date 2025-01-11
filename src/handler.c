@@ -280,11 +280,11 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
             case FROG: {
                 if (receveid.line == 0) { 
                     Item* reached = is_above_any(&receveid, den);
-                    if (reached == NULL) { exit_status = LOSE; break; }
+                    if (reached == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); break; }
                     else { reached->id = 0; exit_status = WIN; displayItem(win, &frog_item, &receveid); break; }
                 }
                 if (receveid.line >= DEN_HEIGHT + NUM_FLOWS ||receveid.line <= DEN_HEIGHT) { /* do nothing */ }
-                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; break; }
+                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); break; }
 
                 displayItem(win, &frog_item, &receveid);
                 frog_item = receveid;
@@ -307,7 +307,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
                 if (stored == NULL) { break; }
                 displayItem(win, stored, &receveid);
 
-                if (is_above(&receveid, &frog_item)) { exit_status = LOSE; break; }
+                if (is_above(&receveid, &frog_item)) { exit_status = LOSE; displayDeath(win, &frog_item, &frog_item); break; }
                 Item* collided = is_above_any(&receveid, flow->granades);
 
                 *stored = receveid;
@@ -335,8 +335,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
             case LOSE: exit_status = LOSE; break;
             case EXIT: exit_status = EXIT; break;
         }
-
-        if (exit_status == EXIT || exit_status == WIN || exit_status == LOSE) { break; }
+        if ( exit_status == EXIT || exit_status == WIN || exit_status == LOSE ) { break; }
     }
 
     free_flows(flows);

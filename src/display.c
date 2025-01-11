@@ -95,6 +95,7 @@ void initDisplay() {
     init_pair(FULL_BLACK_COLOR, COLOR_BLACK, COLOR_BLACK);
     init_pair(WATER_COLOR, COLOR_CYAN, COLOR_CYAN);
     init_pair(FROG_COLOR, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(DROWNED_COLOR, COLOR_BLACK, COLOR_CYAN);
     init_pair(CROCODILE_COLOR, COLOR_YELLOW, COLOR_CYAN);
     init_pair(WAVE_COLOR, COLOR_CYAN, COLOR_YELLOW);
     init_pair(BULLET_COLOR, COLOR_RED, COLOR_RED);
@@ -181,17 +182,28 @@ void displayHearts(WINDOW* win, int lifes) {
 }
 
 void displayTimer(WINDOW* win) {
-    fill(win, 1, 1, 3, WIN_GAME_WIDTH - 2, CROCODILE_COLOR);
+    fill(win, 1, 1, 2, WIN_GAME_WIDTH - 2, CROCODILE_COLOR);
 }
 
 void displayEnd(WINDOW* win, int status) {
     wattron(win, COLOR_PAIR(HEART_COLOR));
-    for (int i = 0; i < 2; i++) { mvwprintw(win, i + 2, 1, "%s", status == LOSE ? game_over[i] : you_win[i]); } 
+    for (int i = 0; i < 2; i++) { mvwprintw(win, i + 1, 1, "%s", status == LOSE ? game_over[i] : you_win[i]); } 
     wrefresh(win);
     wattroff(win, COLOR_PAIR(HEART_COLOR));
 }
 
-void displayItem(WINDOW* win, Item *old, Item *new) {
+void displayDeath(WINDOW* win, Item* old, Item* new) {
+    if (old->type != FROG) { return; }
+    fill(win, old->line * WIN_HEIGHT_RATIO + 1, old->column, WIN_HEIGHT_RATIO - 1, FROG_DIM, CROCODILE_COLOR);
+    for (int i = 0; i < 4; i++) {
+        fill(win, new->line * WIN_HEIGHT_RATIO + 1, new->column, WIN_HEIGHT_RATIO - 1, FROG_DIM, WATER_COLOR);
+        wrefresh(win); usleep(USLEEP * 10);
+        displayFrog(win, new->line * WIN_HEIGHT_RATIO + 1, new->column, DROWNED_COLOR);
+        wrefresh(win); usleep(USLEEP * 10);
+    }
+}
+
+void displayItem(WINDOW* win, Item* old, Item* new) {
     if (old == NULL || new == NULL) { return; }
     
     switch (old->type) {
