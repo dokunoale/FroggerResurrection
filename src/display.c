@@ -38,7 +38,7 @@ void fill(WINDOW *win, int line, int column, int height, int width, int color) {
 void displayFrog(WINDOW* win, int line, int column, int color) {
     wattron(win, COLOR_PAIR(color));
     for (int i = 0; i < 4; i++) {
-        mvwprintw(win, line + i, column, frog_sprite[i]);
+        mvwprintw(win, line + i, column, "%s", frog_sprite[i]);
     }
     wattroff(win, COLOR_PAIR(color));
 }
