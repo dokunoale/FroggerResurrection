@@ -3,6 +3,7 @@
 
 #include "processes.h"
 #include <ncurses.h>
+#include <wchar.h>
 #include <locale.h>
 
 // Ncurses constants

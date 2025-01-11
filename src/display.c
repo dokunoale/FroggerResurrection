@@ -2,7 +2,7 @@
 #include "utils.h"
 
 void initDisplay() {
-    setlocale(LC_ALL, "");
+    setlocale(LC_ALL, "it_IT.UTF-8");
 
     initscr();
     cbreak();
@@ -38,7 +38,7 @@ void fill(WINDOW *win, int line, int column, int height, int width, int color) {
 void displayFrog(WINDOW* win, int line, int column, int color) {
     wattron(win, COLOR_PAIR(color));
     for (int i = 0; i < 4; i++) {
-        mvwaddchstr(win, line + i, column, frog_sprite[i]);
+        mvwprintw(win, line + i, column, frog_sprite[i]);
     }
     wattroff(win, COLOR_PAIR(color));
 }
