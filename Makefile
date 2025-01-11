@@ -16,9 +16,16 @@ TARGET = $(BIN_DIR)/main
 # Regole
 all: $(TARGET)
 
+# Controllo sistema operativo
+ifeq ($(shell uname), Darwin)
+    LIBS = -lpthread -lncurses 
+else
+    LIBS = -lpthread -lncursesw 
+endif
+
 $(TARGET): $(OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lncursesw -g
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -g
 	rm -rf $(OBJ_DIR)/*
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
