@@ -1,5 +1,6 @@
 #include "display.h"
 #include "utils.h"
+#include <locale.h>
 
 static const char *croc_left_sprite[4][24] = {
     { " ", " ", " ", " ", "▄", "▄", " ", "▄", "▄", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",},
@@ -80,13 +81,13 @@ static const char *game_over[2] = {
 };
 
 void initDisplay() {
-    setlocale(LC_ALL, "it_IT.UTF-8");
+    setlocale(LC_ALL, "");
 
     initscr();
-    cbreak();
-    noecho();
-    curs_set(NO_CURSOR);
-    keypad(stdscr, TRUE);
+    cbreak(); // Don't wait ENTER in getch()
+    noecho(); // Hide character typed
+    curs_set(NO_CURSOR); // Remove cursor
+    keypad(stdscr, TRUE); // Enable function keys listener
     nodelay(stdscr, TRUE);
     clear(); refresh();
 
@@ -116,7 +117,8 @@ void fill(WINDOW *win, int line, int column, int height, int width, int color) {
 void displayFrog(WINDOW* win, int line, int column, int color) {
     wattron(win, COLOR_PAIR(color));
     for (int i = 0; i < 4; i++) {
-        mvwprintw(win, line + i, column, "%s", frog_sprite[i]);
+        // mvwprintw(win, line + i, column, "%s", frog_sprite[i]);
+        mvwprintw(win, line + i, column, "\u2580");
     }
     wattroff(win, COLOR_PAIR(color));
 }
