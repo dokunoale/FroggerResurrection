@@ -130,6 +130,7 @@ Item new_frog(Buffer* buffer) {
         .dimension = FROG_DIM,
         .speed = 0,
         .direction = 0,
+        .stage = 0,
         .id = 0
     };
     newTask(buffer, &frog, &item);
@@ -145,6 +146,7 @@ Item new_crocodile(Buffer* buffer, Flow* flow) {
         .dimension = CROCODILE_DIM,
         .speed = flow->speed,
         .direction = flow->direction,
+        .stage = 0,
         .id = 0
     };
     newTask(buffer, &crocodile, &item);
@@ -160,6 +162,7 @@ Item new_bullet(Buffer* buffer, Item* source) {
         .dimension = BULLET_DIM,
         .speed = BULLET_SPEED,
         .direction = source->direction,
+        .stage = 0,
         .id = 0
     };
     newTask(buffer, &bullet, &item);
@@ -174,6 +177,7 @@ Item new_granade(Buffer* buffer, Item* source, int direction) {
         .dimension = GRANADE_DIM,
         .speed = GRANADE_SPEED,
         .direction = direction,
+        .stage = 0,
         .id = 0
     };
     newTask(buffer, &bullet, &item);
@@ -188,6 +192,7 @@ Item new_den(int index) {
         .dimension = FROG_DIM,
         .speed = 0,
         .direction = 0,
+        .stage = 0,
         .id = 1
     };
     return item;
@@ -201,6 +206,7 @@ Item new_timer(Buffer* buffer) {
         .dimension = 1,
         .speed = TIMER_SPEED,
         .direction = LEFT,
+        .stage = 0,
         .id = 0
     };
     newTask(buffer, &timer, &item);

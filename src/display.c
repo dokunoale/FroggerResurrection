@@ -16,7 +16,8 @@ void initDisplay() {
     init_pair(FULL_BLACK_COLOR, COLOR_BLACK, COLOR_BLACK);
     init_pair(WATER_COLOR, COLOR_CYAN, COLOR_CYAN);
     init_pair(FROG_COLOR, COLOR_BLACK, COLOR_YELLOW);
-    init_pair(CROCODILE_COLOR, COLOR_YELLOW, COLOR_YELLOW);
+    init_pair(CROCODILE_COLOR, COLOR_YELLOW, COLOR_CYAN);
+    init_pair(WAVE_COLOR, COLOR_CYAN, COLOR_YELLOW);
     init_pair(BULLET_COLOR, COLOR_RED, COLOR_RED);
     init_pair(DEN_COLOR, COLOR_GREEN, COLOR_CYAN);
     init_pair(TEXT_COLOR, COLOR_WHITE, COLOR_BLACK);
@@ -50,6 +51,23 @@ void displayDen(WINDOW* win, int line, int column) {
     wattroff(win, COLOR_PAIR(DEN_COLOR));
 }
 
+void displayCrocodile(WINDOW* win, int line, int column, int direction, int stage) {
+    wattron(win, COLOR_PAIR(CROCODILE_COLOR));
+    int start_index = (column > 0) ? 0 : -column;
+    int end_index = (column < WIN_GAME_WIDTH) ? CROCODILE_DIM : (column + CROCODILE_DIM) - WIN_GAME_WIDTH;
+    for (int i = 0; i < 4; i++) {
+        for (int j = start_index; j < end_index; j++) {
+            mvwprintw(win, line + i, column + j, (direction == RIGHT) ? croc_right_sprite[i][j] : croc_left_sprite[i][j]);
+        }
+    }
+    wattroff(win, COLOR_PAIR(CROCODILE_COLOR));
+    wattron(win, COLOR_PAIR(WAVE_COLOR));
+    for (int j = start_index; j < end_index; j++) {
+        mvwprintw(win, line + 4, column + j, (direction == RIGHT) ? wave_right_sprite[stage][j] : wave_left_sprite[stage][j]);
+    }
+    wattroff(win, COLOR_PAIR(WAVE_COLOR));
+}
+
 void displayScore(WINDOW* win, int score, int line, int column) {
     int thousands = score / 1000;
     int hundreds = (score % 1000) / 100;
@@ -58,7 +76,7 @@ void displayScore(WINDOW* win, int score, int line, int column) {
 
     wattron(win, COLOR_PAIR(SCORE_COLOR));
     
-    for (int j=0; j<2; j++) {
+    for (int j=0; j<3; j++) {
         mvwprintw(win, line+j, column, numbers[thousands][j]);
         mvwprintw(win, line+j, column + 4, numbers[hundreds][j]);
         mvwprintw(win, line+j, column + 8, numbers[tens][j]);
@@ -104,7 +122,8 @@ void displayItem(WINDOW* win, Item *old, Item *new) {
         } break;
         case CROCODILE: {
             fill(win, old->line * WIN_HEIGHT_RATIO, old->column, WIN_HEIGHT_RATIO, CROCODILE_DIM, WATER_COLOR);
-            fill(win, new->line * WIN_HEIGHT_RATIO + 1, new->column, WIN_HEIGHT_RATIO - 1, CROCODILE_DIM, CROCODILE_COLOR);
+            // fill(win, new->line * WIN_HEIGHT_RATIO + 1, new->column, WIN_HEIGHT_RATIO - 1, CROCODILE_DIM, CROCODILE_COLOR);
+            displayCrocodile(win, new->line * WIN_HEIGHT_RATIO, new->column, new->direction, old->stage);
         } break;
         case BULLET: { 
             fill(win, old->line * WIN_HEIGHT_RATIO + 2, old->column, 1, BULLET_DIM, WATER_COLOR);

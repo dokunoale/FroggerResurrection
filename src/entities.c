@@ -39,6 +39,7 @@ void crocodile(Buffer buffer, Item item) {
             case RIGHT: item.column += STEP; break;
             case LEFT:  item.column -= STEP; break;
         }
+        if ( item.column % STAGE_SKIP == 0 ) { item.stage = (item.stage + 1) % (STAGE_NUM); }
         writeItem(&buffer, &item, MAIN_PIPE);
         usleep(item.speed * USLEEP);
     }

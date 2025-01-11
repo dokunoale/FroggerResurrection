@@ -72,6 +72,8 @@ typedef enum type { LOSE = 0, WIN, FROG, CROCODILE, BULLET, GRANADE, SHOT, DEN, 
 
 #define SCORE_INFO          (WIN_INFO_WIDTH - 20)
 #define HEART_INFO          (5)
+#define STAGE_NUM           8
+#define STAGE_SKIP          3
 
 
 #endif // UTILS_H

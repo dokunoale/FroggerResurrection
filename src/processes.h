@@ -44,6 +44,7 @@ typedef struct {
     unsigned int dimension;
     unsigned int speed;
     unsigned int direction;
+    int stage;
     pid_t id;
 } Item;
 
