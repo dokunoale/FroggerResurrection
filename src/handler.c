@@ -3,9 +3,10 @@
 #include "entities.h"
 #include "handler.h"
 #include "music.h"
+#include <string.h>
 
 void read_record(int score[10], char* player[10]) {
-    FILE* file = fopen("/src/.record", "r");
+    FILE* file = fopen("./src/.record", "r");
     if (file == NULL) { return; }
 
     char line[256];
@@ -16,6 +17,7 @@ void read_record(int score[10], char* player[10]) {
             score[index] = atoi(token);
             token = strtok(NULL, " ");
             if (token != NULL) {
+                token[strcspn(token, "\n")] = '\0';
                 player[index] = strdup(token);
                 index++;
             }
@@ -28,6 +30,13 @@ void read_record(int score[10], char* player[10]) {
 void write_record(int score, char* player) {
     int scores[10]; char* players[10];
     read_record(scores, players);
+
+    // Replace spaces with underscores in the player's name
+    for (char* p = player; *p; p++) {
+        if (*p == ' ') {
+            *p = '_';
+        }
+    }
 
     // Check if the new score is higher than the lowest score in the top 10
     if (score <= scores[9]) { return; }
@@ -52,8 +61,11 @@ void write_record(int score, char* player) {
     }
 
     // Write the top 10 scores and players to the file
-    FILE* file = fopen("/src/.record", "w");
+    FILE* file = fopen("./src/.record", "w");
     if (file == NULL) { return; }
+
+    // Clear the file content before writing
+    freopen(NULL, "w", file);
 
     for (int i = 0; i < 10; i++) {
         if (players[i] != NULL) {
@@ -408,7 +420,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
 }
 
 int game() {
-    WINDOW* timer_win = newwin(WIN_TIMER_HEIGHT, WIN_TIMER_WIDTH, 1, 1);
+    WINDOW* timer_win = newwin(WIN_TIMER_HEIGHT - 1, WIN_TIMER_WIDTH, 1, 1);
     WINDOW* game_win = newwin(WIN_GAME_HEIGHT, WIN_GAME_WIDTH, WIN_TIMER_HEIGHT + 1, 1); 
     WINDOW* info_win = newwin(WIN_INFO_HEIGHT, WIN_INFO_WIDTH, WIN_GAME_HEIGHT + WIN_TIMER_HEIGHT + 1, 1);
     wrefresh(game_win); wbkgd(game_win, COLOR_PAIR(WATER_COLOR)); wrefresh(game_win);
@@ -446,27 +458,74 @@ int game() {
     displayScore(info_win, score, 1, SCORE_INFO);
     stop_music();
 
-    WINDOW* end_win = newwin(WIN_END_HEIGHT, WIN_END_WIDTH, (WIN_GAME_HEIGHT + WIN_END_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_END_WIDTH) / 2);
-    box(end_win, 0, 0); if (reached == DEN_NUM) { displayEnd(end_win, WIN); } else { displayEnd(end_win, LOSE); }
-    
-    int c = KEY_LEFT; int selected = LEFT;
-    while(1) { 
-        switch (c) {
-            case KEY_LEFT: selected = LEFT; displayButton(end_win, 6, 3, "Back to menu", TRUE); displayButton(end_win, 6, 25, "Play again", FALSE); break;
-            case KEY_RIGHT: selected = RIGHT; displayButton(end_win, 6, 3, "Back to menu", FALSE); displayButton(end_win, 6, 25, "Play again", TRUE); break;
+    WINDOW* end_win = newwin(WIN_MENU_HEIGHT, WIN_MENU_WIDTH, (WIN_GAME_HEIGHT - WIN_MENU_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_MENU_WIDTH) / 2);
+    box(end_win, 0, 0); 
+    int selected = LEFT;
+
+    if (reached == DEN_NUM) { displayEnd(end_win, WIN); 
+        wattron(end_win, TEXT_COLOR); 
+        mvwprintw(end_win, 6, (WIN_MENU_WIDTH - 40) / 2, "Write your name > "); 
+        mvwprintw(end_win, 7, (WIN_MENU_WIDTH - 40) / 2, "▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔"); 
+        wrefresh(end_win);
+
+        echo(); curs_set(1);
+        char name[16]; mvwgetnstr(end_win, 6, (WIN_MENU_WIDTH - 40) / 2 + 18, name, 15);
+        noecho(); curs_set(0);
+        wattroff(end_win, TEXT_COLOR);
+
+        write_record(score, name);
+        selected = LEFT;
+
+    } else { displayEnd(end_win, LOSE); 
+        int c = KEY_LEFT; 
+        while(1) { 
+            switch (c) {
+                case KEY_LEFT: selected = LEFT; displayButton(end_win, 6, 3, "Back to menu", TRUE); displayButton(end_win, 6, 25, "Play again", FALSE); break;
+                case KEY_RIGHT: selected = RIGHT; displayButton(end_win, 6, 3, "Back to menu", FALSE); displayButton(end_win, 6, 25, "Play again", TRUE); break;
+            }
+            while ((c = getch()) == ERR) { usleep(USLEEP); }
+            if (c == '\n' || c == ' ') { play_sound(SELECT); usleep(USLEEP * 100); break; }
+            if (c == 'q') { delwin(end_win); return 0; }
+            usleep(USLEEP); 
         }
-        while ((c = getch()) == ERR) { usleep(USLEEP); }
-        if (c == '\n' || c == ' ') { play_sound(SELECT); usleep(USLEEP * 100); break; }
-        if (c == 'q') { delwin(end_win); return 0; }
-        usleep(USLEEP); 
     }
+    
+    
     
     delwin(end_win);
     return selected == LEFT ? 0 : 1;
 }
 
+void showRecord() {
+    WINDOW* record_win = newwin(WIN_MENU_HEIGHT, WIN_MENU_WIDTH, (WIN_GAME_HEIGHT - WIN_MENU_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_MENU_WIDTH) / 2);
+    box(record_win, 0, 0); wrefresh(record_win);
+
+    int scores[10]; char* players[10]; read_record(scores, players);
+
+    wattron(record_win, TEXT_COLOR); 
+
+    for (int i = 0; i < 3; i++) {
+        if (players[i] != NULL) {
+            mvwprintw(record_win, (i*3) + 2, 1, "%2d. %s", i + 1, players[i]);
+            mvwprintw(record_win, (i*3) + 3, 1, "    %d", scores[i]);
+            free(players[i]);
+        }
+    }
+
+    for (int i = 3; i < 10; i++) {
+        if (players[i] != NULL) {
+            mvwprintw(record_win, i - 1, 22, "%2d. %-15s %d", i + 1, players[i], scores[i]);
+            free(players[i]);
+        }
+    }
+    wattroff(record_win, TEXT_COLOR); 
+    wrefresh(record_win);
+    while((getch()) == ERR) { usleep(USLEEP); }
+    delwin(record_win);
+}
+
 int menu() {
-    WINDOW* win = newwin(WIN_END_HEIGHT + 1, WIN_END_WIDTH, (WIN_GAME_HEIGHT + WIN_END_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_END_WIDTH) / 2);
+    WINDOW* win = newwin(WIN_MENU_HEIGHT, WIN_MENU_WIDTH, (WIN_GAME_HEIGHT - WIN_MENU_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_MENU_WIDTH) / 2);
     box(win, 0, 0); wrefresh(win);
     play_music(CHILL); 
 
@@ -474,9 +533,9 @@ int menu() {
     static const int settings_line = 1;
     static const int settings_height = 3;
 
-    displayButton(win, setline(0), (WIN_END_WIDTH - 20) / 2, "PLAY GAME", TRUE);
-    displayButton(win, setline(1), (WIN_END_WIDTH - 20) / 2, "RECORD", FALSE);
-    displayButton(win, setline(2), (WIN_END_WIDTH - 20) / 2, "QUIT", FALSE);
+    displayButton(win, setline(0), (WIN_MENU_WIDTH - 20) / 2, "PLAY GAME", TRUE);
+    displayButton(win, setline(1), (WIN_MENU_WIDTH - 20) / 2, "RECORD", FALSE);
+    displayButton(win, setline(2), (WIN_MENU_WIDTH - 20) / 2, "QUIT", FALSE);
 
     int c = KEY_UP; unsigned int selected = 0;
     while (1) {
@@ -486,17 +545,17 @@ int menu() {
             case KEY_DOWN: selected = (selected + 1) % 3; break;
         }
 
-        displayButton(win, setline(0), (WIN_END_WIDTH - 20) / 2, "PLAY GAME", FALSE);
-        displayButton(win, setline(1), (WIN_END_WIDTH - 20) / 2, "RECORD", FALSE);
-        displayButton(win, setline(2), (WIN_END_WIDTH - 20) / 2, "QUIT", FALSE);
+        displayButton(win, setline(0), (WIN_MENU_WIDTH - 20) / 2, "PLAY GAME", FALSE);
+        displayButton(win, setline(1), (WIN_MENU_WIDTH - 20) / 2, "RECORD", FALSE);
+        displayButton(win, setline(2), (WIN_MENU_WIDTH - 20) / 2, "QUIT", FALSE);
 
         switch (selected) {
-            case PLAY:      displayButton(win, setline(0), (WIN_END_WIDTH - 20) / 2, "PLAY GAME", TRUE); break;
-            case RECORD:    displayButton(win, setline(1), (WIN_END_WIDTH - 20) / 2, "RECORD", TRUE); break;
-            case QUIT:      displayButton(win, setline(2), (WIN_END_WIDTH - 20) / 2, "QUIT", TRUE); break;
+            case PLAY:      displayButton(win, setline(0), (WIN_MENU_WIDTH - 20) / 2, "PLAY GAME", TRUE); break;
+            case RECORD:    displayButton(win, setline(1), (WIN_MENU_WIDTH - 20) / 2, "RECORD", TRUE); break;
+            case QUIT:      displayButton(win, setline(2), (WIN_MENU_WIDTH - 20) / 2, "QUIT", TRUE); break;
         }
 
-        if (c == '\n' || c == ' ') { play_sound(SELECT); usleep(USLEEP * 100) ; break; }
+        if (c == '\n' || c == ' ') { play_sound(SELECT); usleep(USLEEP * 100); break; }
         if (c == 'q') { stop_music(); delwin(win); return QUIT; }
     }
 

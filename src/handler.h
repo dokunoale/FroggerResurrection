@@ -3,5 +3,6 @@
 
 int game();
 int menu();
+void showRecord();
 
 #endif //HANDLER_H

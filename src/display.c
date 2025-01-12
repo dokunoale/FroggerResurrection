@@ -114,6 +114,7 @@ void initDisplay() {
     init_pair(TEXT_COLOR, COLOR_WHITE, COLOR_BLACK);
     init_pair(SCORE_COLOR, COLOR_YELLOW, COLOR_BLACK);
     init_pair(HEART_COLOR, COLOR_RED, COLOR_BLACK);
+    init_pair(TITLE_COLOR, COLOR_WHITE, COLOR_CYAN);
 }
 
 void fill(WINDOW *win, int line, int column, int height, int width, int color) {
@@ -260,5 +261,12 @@ void displayItem(WINDOW* win, Item* old, Item* new) {
     }
 
     // Aggiorna la finestra
+    wrefresh(win);
+}
+
+void displayTitle(WINDOW* win) {
+    wattron(win, COLOR_PAIR(DROWNED_COLOR));
+    for (int i = 0; i < 7; i++) { mvwprintw(win, i + 5, (WIN_MAIN_WIDTH - 92) / 2, "%s", title[i]); }
+    wattroff(win, COLOR_PAIR(DROWNED_COLOR));
     wrefresh(win);
 }
