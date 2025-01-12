@@ -37,5 +37,6 @@ void displayItem(WINDOW* win, Item* old, Item* new);
 void displayHearts(WINDOW* win, int lifes);
 void displayEnd(WINDOW* win, int status);
 void displayDeath(WINDOW* win, Item* old, Item* new);
+void displayButton(WINDOW* win, int line, int column, const char* text, int selected);
 
 #endif // DISPLAY_H

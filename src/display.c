@@ -1,6 +1,7 @@
 #include "display.h"
 #include "utils.h"
 #include <locale.h>
+#include <string.h>
 
 static const char *croc_left_sprite[4][24] = {
     { " ", " ", " ", " ", "▄", "▄", " ", "▄", "▄", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",},
@@ -72,12 +73,19 @@ static const char *heart[2] = {
 };
 
 static const char *you_win[2] = { 
-    "         █ █ █▀█ █ █     █ █ █ █▀█ █▀█   ", 
-    "          █  █▄█ █▄█     █▄█▄█ █▄█ █ █   " 
+    "         █ █ █▀█ █ █   █ █ █ █▀█ █▀█", 
+    "          █  █▄█ █▄█   █▄█▄█ █▄█ █ █" 
 };
+
 static const char *game_over[2] = { 
-    "      █▀▀ █▀█ █▀▄▀█ ███   █▀█ █ █ ███ █▀█",
-    "      █▄█ █▀█ █ ▀ █ █▄▄   █▄█ ▀▄▀ █▄▄ █▀▄ "
+    "     █▀▀ █▀█ █▀▄▀█ ███   █▀█ █ █ ███ █▀█",
+    "     █▄█ █▀█ █ ▀ █ █▄▄   █▄█ ▀▄▀ █▄▄ █▀▄ "
+};
+
+static const char *button[3] = { 
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "▓▌                ▐▓",
+    "▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔"
 };
 
 void initDisplay() {
@@ -92,6 +100,9 @@ void initDisplay() {
     clear(); refresh();
 
     start_color();
+
+    // init_color(REAL_WHITE, 800, 800, 800); 
+   
     init_pair(FULL_BLACK_COLOR, COLOR_BLACK, COLOR_BLACK);
     init_pair(WATER_COLOR, COLOR_CYAN, COLOR_CYAN);
     init_pair(FROG_COLOR, COLOR_BLACK, COLOR_YELLOW);
@@ -187,7 +198,7 @@ void displayTimer(WINDOW* win) {
 
 void displayEnd(WINDOW* win, int status) {
     wattron(win, COLOR_PAIR(HEART_COLOR));
-    for (int i = 0; i < 2; i++) { mvwprintw(win, i + 1, 1, "%s", status == LOSE ? game_over[i] : you_win[i]); } 
+    for (int i = 0; i < 2; i++) { mvwprintw(win, i + 2, 1, "%s", status == LOSE ? game_over[i] : you_win[i]); } 
     wrefresh(win);
     wattroff(win, COLOR_PAIR(HEART_COLOR));
 }
@@ -201,6 +212,21 @@ void displayDeath(WINDOW* win, Item* old, Item* new) {
         displayFrog(win, new->line * WIN_HEIGHT_RATIO + 1, new->column, DROWNED_COLOR);
         wrefresh(win); usleep(USLEEP * 10);
     }
+}
+
+void displayButton(WINDOW* win, int line, int column, const char* text, int selected) {
+    int text_length = strlen(text);
+    int start_column = column + (20 - text_length) / 2;
+
+    wattron(win, COLOR_PAIR(TEXT_COLOR));
+    for (int i = 0; i < 3; i++) { mvwprintw(win, line + i, column, "%s", button[i]); }
+    wattroff(win, COLOR_PAIR(TEXT_COLOR));
+
+    if (selected) {wattron(win, A_REVERSE);} else {wattron(win, COLOR_PAIR(TEXT_COLOR));}
+    mvwprintw(win, line + 1, start_column, "%s", text);
+    if (selected) {wattroff(win, A_REVERSE);} else {wattroff(win, COLOR_PAIR(TEXT_COLOR));}
+
+    wrefresh(win);
 }
 
 void displayItem(WINDOW* win, Item* old, Item* new) {

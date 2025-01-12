@@ -283,11 +283,11 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
                 if (receveid.line != frog_item.line) { play_sound(JUMP); }
                 if (receveid.line == 0) { 
                     Item* reached = is_above_any(&receveid, den);
-                    if (reached == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); play_sound(HIT); break; }
+                    if (reached == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &receveid); break; }
                     else { reached->id = 0; exit_status = WIN; displayItem(win, &frog_item, &receveid); break; }
                 }
                 if (receveid.line >= DEN_HEIGHT + NUM_FLOWS ||receveid.line <= DEN_HEIGHT) { /* do nothing */ }
-                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); play_sound(HIT); break; }
+                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &receveid); break; }
 
                 displayItem(win, &frog_item, &receveid);
                 frog_item = receveid;
@@ -310,7 +310,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
                 if (stored == NULL) { break; }
                 displayItem(win, stored, &receveid);
 
-                if (is_above(&receveid, &frog_item)) { exit_status = LOSE; displayDeath(win, &frog_item, &frog_item); play_sound(HIT); break; }
+                if (is_above(&receveid, &frog_item)) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &frog_item); break; }
                 Item* collided = is_above_any(&receveid, flow->granades);
 
                 *stored = receveid;
@@ -346,7 +346,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
     return exit_status;
 }
 
-void game() {
+int game() {
     WINDOW* timer_win = newwin(WIN_TIMER_HEIGHT, WIN_TIMER_WIDTH, 1, 1);
     WINDOW* game_win = newwin(WIN_GAME_HEIGHT, WIN_GAME_WIDTH, WIN_TIMER_HEIGHT + 1, 1); 
     WINDOW* info_win = newwin(WIN_INFO_HEIGHT, WIN_INFO_WIDTH, WIN_GAME_HEIGHT + WIN_TIMER_HEIGHT + 1, 1);
@@ -376,17 +376,30 @@ void game() {
         int time_spent = (int)difftime(end_time, start_time);
         
         switch (status) {
-            case EXIT: stop_music(); return;
+            case EXIT: stop_music(); return 0;
             case LOSE: lifes--; break;
             case WIN:  if (time_spent < BASE_SCORE) { score += ((BASE_SCORE - time_spent) * (lifes + 1)); }; reached++; break;
         }
     }
 
-    WINDOW* end_win = newwin(WIN_END_HEIGHT, WIN_END_WIDTH, (WIN_GAME_HEIGHT + WIN_END_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_END_WIDTH) / 2);
-    box(end_win, 0, 0); wrefresh(end_win); displayScore(end_win, score, 6, 17);
-    if (reached == DEN_NUM) { displayEnd(end_win, WIN); }
-    else { displayEnd(end_win, LOSE); }
-    char stop; while ((stop = getch()) == ERR) { usleep(USLEEP); }
-    delwin(end_win);
+    displayScore(info_win, score, 1, SCORE_INFO);
     stop_music();
+
+    WINDOW* end_win = newwin(WIN_END_HEIGHT, WIN_END_WIDTH, (WIN_GAME_HEIGHT + WIN_END_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_END_WIDTH) / 2);
+    box(end_win, 0, 0); if (reached == DEN_NUM) { displayEnd(end_win, WIN); } else { displayEnd(end_win, LOSE); }
+    
+    int c = KEY_LEFT; int selected = LEFT;
+    while(1) { 
+        switch (c) {
+            case KEY_LEFT: selected = LEFT; displayButton(end_win, 6, 3, "Back to menu", TRUE); displayButton(end_win, 6, 25, "Play again", FALSE); break;
+            case KEY_RIGHT: selected = RIGHT; displayButton(end_win, 6, 3, "Back to menu", FALSE); displayButton(end_win, 6, 25, "Play again", TRUE); break;
+        }
+        while ((c = getch()) == ERR) { usleep(USLEEP); }
+        if (c == '\n' || c == ' ') { break; }
+        if (c == 'q') { delwin(end_win); return 0; }
+        usleep(USLEEP); 
+    }
+    
+    delwin(end_win);
+    return selected == LEFT ? 0 : 1;
 }
