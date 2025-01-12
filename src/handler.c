@@ -2,6 +2,7 @@
 #include "display.h"
 #include "entities.h"
 #include "handler.h"
+#include "music.h"
 
 // Returns a random number between min and max
 int choose(int min, int max) { return rand() % (max - min + 1) + min; }
@@ -260,6 +261,7 @@ void frog_shot(Flow* flow, Buffer* buffer, Item* item) {
  */
 int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
     srand(time(NULL));
+    
     Buffer buffer = newBuffer();
     Flow* flows = new_flows();
     
@@ -278,13 +280,14 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
         
         switch (receveid.type) {
             case FROG: {
+                if (receveid.line != frog_item.line) { play_sound(JUMP); }
                 if (receveid.line == 0) { 
                     Item* reached = is_above_any(&receveid, den);
-                    if (reached == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); break; }
+                    if (reached == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); play_sound(HIT); break; }
                     else { reached->id = 0; exit_status = WIN; displayItem(win, &frog_item, &receveid); break; }
                 }
                 if (receveid.line >= DEN_HEIGHT + NUM_FLOWS ||receveid.line <= DEN_HEIGHT) { /* do nothing */ }
-                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); break; }
+                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; displayDeath(win, &frog_item, &receveid); play_sound(HIT); break; }
 
                 displayItem(win, &frog_item, &receveid);
                 frog_item = receveid;
@@ -307,7 +310,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
                 if (stored == NULL) { break; }
                 displayItem(win, stored, &receveid);
 
-                if (is_above(&receveid, &frog_item)) { exit_status = LOSE; displayDeath(win, &frog_item, &frog_item); break; }
+                if (is_above(&receveid, &frog_item)) { exit_status = LOSE; displayDeath(win, &frog_item, &frog_item); play_sound(HIT); break; }
                 Item* collided = is_above_any(&receveid, flow->granades);
 
                 *stored = receveid;
@@ -355,6 +358,8 @@ void game() {
     int reached = 0;
     int score = 0;
 
+    play_music(EASY);
+    
     while(lifes >= 0 && reached < DEN_NUM) {
         wclear(game_win); wclear(info_win); wrefresh(game_win); wrefresh(info_win);
         
@@ -371,7 +376,7 @@ void game() {
         int time_spent = (int)difftime(end_time, start_time);
         
         switch (status) {
-            case EXIT: return;
+            case EXIT: stop_music(); return;
             case LOSE: lifes--; break;
             case WIN:  if (time_spent < BASE_SCORE) { score += ((BASE_SCORE - time_spent) * (lifes + 1)); }; reached++; break;
         }
@@ -383,4 +388,5 @@ void game() {
     else { displayEnd(end_win, LOSE); }
     char stop; while ((stop = getch()) == ERR) { usleep(USLEEP); }
     delwin(end_win);
+    stop_music();
 }

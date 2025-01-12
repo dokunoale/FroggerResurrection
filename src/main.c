@@ -1,6 +1,7 @@
 #include "handler.h"
 #include "display.h"
 #include "utils.h"
+#include "music.h"
 
 int main() {
 
