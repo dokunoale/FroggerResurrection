@@ -75,5 +75,7 @@ typedef enum type { LOSE = 0, WIN, FROG, CROCODILE, BULLET, GRANADE, SHOT, DEN, 
 #define STAGE_NUM           8
 #define STAGE_SKIP          3
 
+typedef enum settings { PLAY = 0, RECORD, QUIT } Menu;
+#define setline(x) (settings_line + (x * settings_height))
 
 #endif // UTILS_H

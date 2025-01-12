@@ -4,6 +4,67 @@
 #include "handler.h"
 #include "music.h"
 
+void read_record(int score[10], char* player[10]) {
+    FILE* file = fopen("/src/.record", "r");
+    if (file == NULL) { return; }
+
+    char line[256];
+    int index = 0;
+    while (fgets(line, sizeof(line), file) && index < 10) {
+        char* token = strtok(line, " ");
+        if (token != NULL) {
+            score[index] = atoi(token);
+            token = strtok(NULL, " ");
+            if (token != NULL) {
+                player[index] = strdup(token);
+                index++;
+            }
+        }
+    }
+
+    fclose(file);
+}
+
+void write_record(int score, char* player) {
+    int scores[10]; char* players[10];
+    read_record(scores, players);
+
+    // Check if the new score is higher than the lowest score in the top 10
+    if (score <= scores[9]) { return; }
+
+    // Add the new score and player to the arrays
+    scores[9] = score;
+    players[9] = strdup(player);
+
+    // Sort the scores and players in descending order
+    for (int i = 0; i < 10; i++) {
+        for (int j = i + 1; j < 10; j++) {
+            if (scores[i] < scores[j]) {
+                int temp_score = scores[i];
+                scores[i] = scores[j];
+                scores[j] = temp_score;
+
+                char* temp_player = players[i];
+                players[i] = players[j];
+                players[j] = temp_player;
+            }
+        }
+    }
+
+    // Write the top 10 scores and players to the file
+    FILE* file = fopen("/src/.record", "w");
+    if (file == NULL) { return; }
+
+    for (int i = 0; i < 10; i++) {
+        if (players[i] != NULL) {
+            fprintf(file, "%d %s\n", scores[i], players[i]);
+            free(players[i]);
+        }
+    }
+
+    fclose(file);
+}
+
 // Returns a random number between min and max
 int choose(int min, int max) { return rand() % (max - min + 1) + min; }
 
@@ -358,7 +419,7 @@ int game() {
     int reached = 0;
     int score = 0;
 
-    play_music(EASY);
+    play_music(PIXEL);
     
     while(lifes >= 0 && reached < DEN_NUM) {
         wclear(game_win); wclear(info_win); wrefresh(game_win); wrefresh(info_win);
@@ -376,10 +437,10 @@ int game() {
         int time_spent = (int)difftime(end_time, start_time);
         
         switch (status) {
-            case EXIT: stop_music(); return 0;
             case LOSE: lifes--; break;
             case WIN:  if (time_spent < BASE_SCORE) { score += ((BASE_SCORE - time_spent) * (lifes + 1)); }; reached++; break;
         }
+        if (status == EXIT) { break; }
     }
 
     displayScore(info_win, score, 1, SCORE_INFO);
@@ -395,7 +456,7 @@ int game() {
             case KEY_RIGHT: selected = RIGHT; displayButton(end_win, 6, 3, "Back to menu", FALSE); displayButton(end_win, 6, 25, "Play again", TRUE); break;
         }
         while ((c = getch()) == ERR) { usleep(USLEEP); }
-        if (c == '\n' || c == ' ') { break; }
+        if (c == '\n' || c == ' ') { play_sound(SELECT); usleep(USLEEP * 100); break; }
         if (c == 'q') { delwin(end_win); return 0; }
         usleep(USLEEP); 
     }
@@ -403,3 +464,43 @@ int game() {
     delwin(end_win);
     return selected == LEFT ? 0 : 1;
 }
+
+int menu() {
+    WINDOW* win = newwin(WIN_END_HEIGHT + 1, WIN_END_WIDTH, (WIN_GAME_HEIGHT + WIN_END_HEIGHT) / 2, (WIN_GAME_WIDTH - WIN_END_WIDTH) / 2);
+    box(win, 0, 0); wrefresh(win);
+    play_music(CHILL); 
+
+    // TODO: stampa il titolo
+    static const int settings_line = 1;
+    static const int settings_height = 3;
+
+    displayButton(win, setline(0), (WIN_END_WIDTH - 20) / 2, "PLAY GAME", TRUE);
+    displayButton(win, setline(1), (WIN_END_WIDTH - 20) / 2, "RECORD", FALSE);
+    displayButton(win, setline(2), (WIN_END_WIDTH - 20) / 2, "QUIT", FALSE);
+
+    int c = KEY_UP; unsigned int selected = 0;
+    while (1) {
+        while((c = getch()) == ERR) { usleep(USLEEP); }
+        switch (c) {
+            case KEY_UP: selected = (selected - 1) % 3; break;
+            case KEY_DOWN: selected = (selected + 1) % 3; break;
+        }
+
+        displayButton(win, setline(0), (WIN_END_WIDTH - 20) / 2, "PLAY GAME", FALSE);
+        displayButton(win, setline(1), (WIN_END_WIDTH - 20) / 2, "RECORD", FALSE);
+        displayButton(win, setline(2), (WIN_END_WIDTH - 20) / 2, "QUIT", FALSE);
+
+        switch (selected) {
+            case PLAY:      displayButton(win, setline(0), (WIN_END_WIDTH - 20) / 2, "PLAY GAME", TRUE); break;
+            case RECORD:    displayButton(win, setline(1), (WIN_END_WIDTH - 20) / 2, "RECORD", TRUE); break;
+            case QUIT:      displayButton(win, setline(2), (WIN_END_WIDTH - 20) / 2, "QUIT", TRUE); break;
+        }
+
+        if (c == '\n' || c == ' ') { play_sound(SELECT); usleep(USLEEP * 100) ; break; }
+        if (c == 'q') { stop_music(); delwin(win); return QUIT; }
+    }
+
+    delwin(win);
+    stop_music(); return (int)selected;
+}
+

@@ -13,13 +13,15 @@
 
 static const str debug[2] = {">/dev/null 2>&1 &", ""};
 
-static const str sound[4] = {"select", "jump", "hit", "frogger" };
+static const str sound[] = {"select", "jump", "hit", "frogger" };
 typedef enum sounds { SELECT = 0, JUMP, HIT, INTRO } Sounds;
-static const str music[1] = {"alongtheriver" };
-typedef enum musics { EASY = 0 } Music;
-static const int loop[1]  = { YES };
+static const str music[] = {"alongtheriver", "pixelriver"}; 
+typedef enum musics { CHILL = 0, PIXEL } Music;
+static const int loop[]  = { YES, YES };
 
 // Function prototypes
+void set_sounds_volume(int volume);
+void set_music_volume(int volume);
 void play_sound(int sound_id);
 void play_music(int music_id);
 void stop_music(void);

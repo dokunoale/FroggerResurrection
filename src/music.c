@@ -9,6 +9,18 @@
 
 #define VOL_EFCT_SET 8
 
+int sounds_volume = MAX_VOLUME;
+int music_volume = MAX_VOLUME / 2;
+
+void set_sounds_volume(int volume) {
+    if (volume < 0 || volume > 10) return;
+    sounds_volume = volume * MAX_VOLUME / 10;
+}
+
+void set_music_volume(int volume) {
+    if (volume < 0 || volume > 10) return;
+    music_volume = volume * MAX_VOLUME / 20;
+}
 
 // Stop all sounds
 void stop_music(void) {
@@ -29,7 +41,7 @@ void resume_music(void) {
 void play_sound(int sound_id) {
     if (VOL_EFCT_SET == 0) return;
     char cmd[LIM_STR_BUF];
-    sprintf(cmd, "mpg123 -f%d ./src/audio/%s.mp3 %s", VOL_EFCT_SET * MAX_VOLUME/10, sound[sound_id], debug[NON]);
+    sprintf(cmd, "mpg123 -f%d ./src/audio/%s.mp3 %s", sounds_volume, sound[sound_id], debug[NON]);
     if (system(cmd) == -1) { perror("Error: "); exit(1); }
 }
 
@@ -39,8 +51,8 @@ void play_music(int music_id) {
     stop_music();
     char cmd[LIM_STR_BUF];
     switch (loop[music_id]) {
-        case NON: sprintf(cmd, "mpg123 -f%d -q ./src/audio/%s.mp3 %s", VOL_EFCT_SET * MAX_VOLUME/10, music[music_id], debug[NON]); break;
-        case YES: sprintf(cmd, "mpg123 -f%d -q --loop %d ./src/audio/%s.mp3 %s", VOL_EFCT_SET * MAX_VOLUME/10, loop[music_id], music[music_id], debug[NON]); break;
+        case NON: sprintf(cmd, "mpg123 -f%d -q ./src/audio/%s.mp3 %s", music_volume, music[music_id], debug[NON]); break;
+        case YES: sprintf(cmd, "mpg123 -f%d -q --loop %d ./src/audio/%s.mp3 %s", music_volume, loop[music_id], music[music_id], debug[NON]); break;
         default: return;
     }
     
