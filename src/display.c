@@ -224,6 +224,7 @@ void displayButton(WINDOW* win, int line, int column, const char* text, int sele
     wattroff(win, COLOR_PAIR(TEXT_COLOR));
 
     if (selected) {wattron(win, A_REVERSE);} else {wattron(win, COLOR_PAIR(TEXT_COLOR));}
+    mvwprintw(win, line + 1, column + 1, "%s", "                  ");
     mvwprintw(win, line + 1, start_column, "%s", text);
     if (selected) {wattroff(win, A_REVERSE);} else {wattroff(win, COLOR_PAIR(TEXT_COLOR));}
 

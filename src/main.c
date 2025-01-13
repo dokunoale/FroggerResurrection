@@ -4,7 +4,8 @@
 #include "music.h"
 
 int main() {
-
+    
+    remote();
     initDisplay();
     WINDOW *main_win = newwin(WIN_MAIN_HEIGHT, WIN_MAIN_WIDTH, 0, 0); wrefresh(main_win);
     wbkgd(main_win, COLOR_PAIR(DROWNED_COLOR)); 
@@ -20,5 +21,6 @@ int main() {
     }
 
     endwin();
+    close_remote();
     return 0;
 }

@@ -8,7 +8,7 @@ void frog(Buffer buffer, Item item) {
         item.type = FROG;
         int c, size = readItem(&buffer, &item, REVERSE_PIPE);
         if (size != 0) { writeItem(&buffer, &item, MAIN_PIPE); continue; } 
-        if ((c = getch()) == ERR) { usleep(USLEEP); continue; }
+        if (input(&c) == 0) continue;
         switch (c) {
             case 'q': item.type = EXIT; break;
             case ' ': item.type = SHOT; break;

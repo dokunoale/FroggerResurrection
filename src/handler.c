@@ -431,7 +431,7 @@ int game() {
     int reached = 0;
     int score = 0;
 
-    play_music(PIXEL);
+    play_music(CHILL);
     
     while(lifes >= 0 && reached < DEN_NUM) {
         wclear(game_win); wclear(info_win); wrefresh(game_win); wrefresh(info_win);
@@ -468,9 +468,29 @@ int game() {
         mvwprintw(end_win, 7, (WIN_MENU_WIDTH - 40) / 2, "▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔"); 
         wrefresh(end_win);
 
-        echo(); curs_set(1);
-        char name[16]; mvwgetnstr(end_win, 6, (WIN_MENU_WIDTH - 40) / 2 + 18, name, 15);
-        noecho(); curs_set(0);
+        char name[16];
+        wrefresh(end_win);
+        int c;
+        int index = 0;
+        while (index < 15) {
+            if (input(&c) == 0) { continue; }
+            if (c == '\n' || c == '\r') {
+                break;
+            } else if (c == KEY_BACKSPACE || c == 127) {
+                if (index > 0) {
+                    index--;
+                    name[index] = '\0';
+                    mvwprintw(end_win, 6, (WIN_MENU_WIDTH - 40) / 2 + 18 + index, " ");
+                    wmove(end_win, 6, (WIN_MENU_WIDTH - 40) / 2 + 18 + index);
+                    wrefresh(end_win);
+                }
+            } else if (c >= ' ' && c <= '~') {
+                name[index++] = c;
+                mvwprintw(end_win, 6, (WIN_MENU_WIDTH - 40) / 2 + 18 + index - 1, "%c", c);
+                wrefresh(end_win);
+            }
+        }
+        name[index] = '\0';
         wattroff(end_win, TEXT_COLOR);
 
         write_record(score, name);
@@ -483,7 +503,7 @@ int game() {
                 case KEY_LEFT: selected = LEFT; displayButton(end_win, 6, 3, "Back to menu", TRUE); displayButton(end_win, 6, 25, "Play again", FALSE); break;
                 case KEY_RIGHT: selected = RIGHT; displayButton(end_win, 6, 3, "Back to menu", FALSE); displayButton(end_win, 6, 25, "Play again", TRUE); break;
             }
-            while ((c = getch()) == ERR) { usleep(USLEEP); }
+            loop_input(&c)
             if (c == '\n' || c == ' ') { play_sound(SELECT); usleep(USLEEP * 100); break; }
             if (c == 'q') { delwin(end_win); return 0; }
             usleep(USLEEP); 
@@ -520,7 +540,8 @@ void showRecord() {
     }
     wattroff(record_win, TEXT_COLOR); 
     wrefresh(record_win);
-    while((getch()) == ERR) { usleep(USLEEP); }
+    int c = 0;
+    loop_input(&c)
     delwin(record_win);
 }
 
@@ -539,7 +560,7 @@ int menu() {
 
     int c = KEY_UP; unsigned int selected = 0;
     while (1) {
-        while((c = getch()) == ERR) { usleep(USLEEP); }
+        loop_input(&c)
         switch (c) {
             case KEY_UP: selected = (selected - 1) % 3; break;
             case KEY_DOWN: selected = (selected + 1) % 3; break;

@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <errno.h>
+#include <ncurses.h>
+#include "network.h"
 
 #define USLEEP 6000 
 
@@ -77,5 +79,8 @@ typedef enum type { LOSE = 0, WIN, FROG, CROCODILE, BULLET, GRANADE, SHOT, DEN, 
 
 typedef enum settings { PLAY = 0, RECORD, QUIT } Menu;
 #define setline(x) (settings_line + (x * settings_height))
+
+int input(int *c);
+#define loop_input(x) { do { usleep(USLEEP); } while(input(x) == 0); }
 
 #endif // UTILS_H
