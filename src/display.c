@@ -73,13 +73,13 @@ static const char *heart[2] = {
 };
 
 static const char *you_win[2] = { 
-    "         █ █ █▀█ █ █   █ █ █ █▀█ █▀█", 
-    "          █  █▄█ █▄█   █▄█▄█ █▄█ █ █" 
+    "█ █ █▀█ █ █   █ █ █ █▀█ █▀█", 
+    " █  █▄█ █▄█   █▄█▄█ █▄█ █ █" 
 };
 
 static const char *game_over[2] = { 
-    "     █▀▀ █▀█ █▀▄▀█ ███   █▀█ █ █ ███ █▀█",
-    "     █▄█ █▀█ █ ▀ █ █▄▄   █▄█ ▀▄▀ █▄▄ █▀▄ "
+    "█▀▀ █▀█ █▀▄▀█ ███   █▀█ █ █ ███ █▀█",
+    "█▄█ █▀█ █ ▀ █ █▄▄   █▄█ ▀▄▀ █▄▄ █▀▄ "
 };
 
 static const char *button[3] = { 
@@ -199,7 +199,16 @@ void displayTimer(WINDOW* win) {
 
 void displayEnd(WINDOW* win, int status) {
     wattron(win, COLOR_PAIR(HEART_COLOR));
-    for (int i = 0; i < 2; i++) { mvwprintw(win, i + 2, 1, "%s", status == LOSE ? game_over[i] : you_win[i]); } 
+    for (int i = 0; i < 2; i++) { 
+        switch (status) {
+            case LOSE: {
+                mvwprintw(win, 2 + i, (WIN_MENU_WIDTH - 35) / 2, "%s", game_over[i]);
+            } break;
+            case WIN: {
+                mvwprintw(win, 2 + i, (WIN_MENU_WIDTH - 27) / 2, "%s", you_win[i]);
+            } break;
+        }
+    } 
     wrefresh(win);
     wattroff(win, COLOR_PAIR(HEART_COLOR));
 }
