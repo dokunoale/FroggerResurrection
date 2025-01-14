@@ -107,6 +107,7 @@ Item* is_above_any(Item* item, Item* stream) {
         default: return NULL;
     }
     for (unsigned int i = 0; i < max; i++) {
+        if (stream->type == DEN && stream[i].stage != 0 && is_above(item, &stream[i]) ) { return &stream[i];; }
         if (stream[i].id != 0 && is_above(item, &stream[i])) { return &stream[i]; }
     }
     return NULL;

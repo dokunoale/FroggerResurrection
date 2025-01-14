@@ -21,7 +21,6 @@ int init_server();
 int init_client();
 int nrecv(int client_socket, int* data);
 int nsend(int client_socket, int* data);
-void remote();
-void close_remote();
+
 
 #endif // NETWORK_H
