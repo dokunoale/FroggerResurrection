@@ -266,8 +266,8 @@ Item new_den(int index) {
         .dimension = FROG_DIM,
         .speed = 0,
         .direction = 0,
-        .stage = 0,
-        .id = 1
+        .stage = 1,
+        .id = 0
     };
     return item;
 }
@@ -338,14 +338,14 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
     Buffer buffer = newBuffer();
     Flow* flows = new_flows();
     
-    for (int i = 0; i < DEN_NUM; i++) { if (den[i].id != 0) displayItem(win, &den[i], &den[i]); }
+    for (int i = 0; i < DEN_NUM; i++) { if (den[i].stage != 0) displayItem(win, &den[i], &den[i]); }
     Item frog_item = new_frog(&buffer);
     new_timer(&buffer); displayTimer(timer_win);
 
     int exit_status = FROG;
     while(1) {
         Item receveid;
-        readItem(&buffer, &receveid, MAIN_PIPE);
+        readItem(&buffer, &receveid, MAIN_BUF);
         Flow* flow = &flows[receveid.line - DEN_HEIGHT];
 
         // Creates new random crocodiles if there is space on each flow
@@ -357,7 +357,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
                 if (receveid.line == 0) { 
                     Item* reached = is_above_any(&receveid, den);
                     if (reached == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &receveid); break; }
-                    else { reached->id = 0; exit_status = WIN; displayItem(win, &frog_item, &receveid); break; }
+                    else { reached->stage = 0; exit_status = WIN; displayItem(win, &frog_item, &receveid); break; }
                 }
                 if (receveid.line >= DEN_HEIGHT + NUM_FLOWS ||receveid.line <= DEN_HEIGHT) { /* do nothing */ }
                 else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &receveid); break; }
@@ -416,6 +416,7 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
 
     free_flows(flows);
     killTask(&frog_item);
+    freeBuffer(&buffer);
     return exit_status;
 }
 

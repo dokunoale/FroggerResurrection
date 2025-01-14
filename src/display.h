@@ -1,7 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "processes.h"
+#include "utils.h"
 #include <ncurses.h>
 
 static const char *title[] = {

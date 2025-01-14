@@ -48,28 +48,13 @@ typedef struct {
     pid_t id;
 } Item;
 
-/**
- * @param line The line of the flow.
- * @param direction The direction of the flow: LEFT or RIGHT.
- * @param speed The speed of the flow.
- * @param how_many_crocodiles The number of crocodiles in the flow.
- * @param crocodiles An array of crocodiles of type Item.
- */
-typedef struct Flow {
-    unsigned int line;
-    unsigned int direction;
-    unsigned int speed;
-    Item *crocodiles;
-    Item *bullets;
-    Item *granades;
-} Flow;
-
 #define PID_CHILD 0
 
 typedef enum { PIPE_READ, PIPE_WRITE } PipeAction;
-typedef enum { MAIN_PIPE, REVERSE_PIPE } Pipe;
+typedef enum { MAIN_BUF, REVERSE_BUF } Pipe;
 
 Buffer newBuffer();
+void freeBuffer(Buffer *buffer);
 void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item);
 void killTask(Item *item);
 void writeItem (Buffer *buffer, Item *item, Pipe pipe);

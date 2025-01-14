@@ -3,11 +3,11 @@
 #include "display.h"
 
 void frog(Buffer buffer, Item item) {
-    writeItem(&buffer, &item, MAIN_PIPE);
+    writeItem(&buffer, &item, MAIN_BUF);
     while(1) {
         item.type = FROG;
-        int c, size = readItem(&buffer, &item, REVERSE_PIPE);
-        if (size != 0) { writeItem(&buffer, &item, MAIN_PIPE); continue; } 
+        int c, size = readItem(&buffer, &item, REVERSE_BUF);
+        if (size != 0) { writeItem(&buffer, &item, MAIN_BUF); continue; } 
         if (input(&c) == 0) continue;
         switch (c) {
             case 'q': item.type = EXIT; break;
@@ -21,7 +21,7 @@ void frog(Buffer buffer, Item item) {
             case 'A':; case 'a':;
             case KEY_LEFT:  if (item.column > 1)  item.column-= STEP; break;
         }
-        writeItem(&buffer, &item, MAIN_PIPE);
+        writeItem(&buffer, &item, MAIN_BUF);
     }
 }
 
@@ -30,7 +30,7 @@ void moveFrog(Buffer* buffer, Item item, int direction) {
         case RIGHT: if (item.column + FROG_DIM < GAME_WIDTH - 2) item.column += STEP; break;
         case LEFT:  if (item.column > 1) item.column -= STEP; break;
     }
-    writeItem(buffer, &item, REVERSE_PIPE);
+    writeItem(buffer, &item, REVERSE_BUF);
 }
 
 void crocodile(Buffer buffer, Item item) {
@@ -40,7 +40,7 @@ void crocodile(Buffer buffer, Item item) {
             case LEFT:  item.column -= STEP; break;
         }
         if ( item.column % STAGE_SKIP == 0 ) { item.stage = (item.stage + 1) % (STAGE_NUM); }
-        writeItem(&buffer, &item, MAIN_PIPE);
+        writeItem(&buffer, &item, MAIN_BUF);
         usleep(item.speed * USLEEP);
     }
 }
@@ -51,7 +51,7 @@ void bullet(Buffer buffer, Item item) {
             case RIGHT: item.column += STEP; break;
             case LEFT:  item.column -= STEP; break;
         }
-        writeItem(&buffer, &item, MAIN_PIPE);
+        writeItem(&buffer, &item, MAIN_BUF);
         usleep(item.speed * USLEEP);
     }
 }
@@ -61,7 +61,7 @@ void timer(Buffer buffer, Item item) {
         usleep(item.speed * USLEEP);
         if (item.column > 1 ) item.column -= 1;
         else item.type = LOSE;
-        writeItem(&buffer, &item, MAIN_PIPE);
+        writeItem(&buffer, &item, MAIN_BUF);
     }
 }
 

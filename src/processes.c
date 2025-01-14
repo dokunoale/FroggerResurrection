@@ -95,6 +95,14 @@ Buffer newBuffer() {
     return buffer;
 }
 
+void freeBuffer(Buffer *buffer) {
+    close(buffer->main_pipe_fd[PIPE_READ]);
+    close(buffer->main_pipe_fd[PIPE_WRITE]);
+    close(buffer->reverse_pipe_fd[PIPE_READ]);
+    close(buffer->reverse_pipe_fd[PIPE_WRITE]);
+    free_pidlist(&buffer->pid_list);
+}
+
 /**
  * Creates a new process with the given function and arguments.
  * 
@@ -134,12 +142,12 @@ void killTask(Item *item) {
  */
 void writeItem(Buffer *buffer, Item *item, Pipe pipe) {
     switch (pipe) {
-        case MAIN_PIPE:
+        case MAIN_BUF:
             while(write(buffer->main_pipe_fd[PIPE_WRITE], item, sizeof(Item)) < 0) {
                 if(errno != EINTR) _exit(EXIT_FAILURE);
             }
             break;
-        case REVERSE_PIPE:
+        case REVERSE_BUF:
             while(write(buffer->reverse_pipe_fd[PIPE_WRITE], item, sizeof(Item)) < 0) {
                 if(errno != EINTR) _exit(EXIT_FAILURE);
             }
@@ -157,7 +165,7 @@ ssize_t readItem(Buffer *buffer, Item *item, Pipe pipe) {
         Item newitem;
         ssize_t size;
 
-        case MAIN_PIPE: { // Leggi dalla main pipe (bloccante)
+        case MAIN_BUF: { // Leggi dalla main pipe (bloccante)
             while (read(buffer->main_pipe_fd[PIPE_READ], &newitem, sizeof(Item)) < 0) {
                 usleep(3);
                 if (errno != EINTR) _exit(EXIT_FAILURE);
@@ -165,7 +173,7 @@ ssize_t readItem(Buffer *buffer, Item *item, Pipe pipe) {
             if (sizeof(newitem) == sizeof(Item)) { size = sizeof(Item); *item = newitem; }        
         } return size;
 
-        case REVERSE_PIPE: { // Leggi dalla reverse pipe (non bloccante)
+        case REVERSE_BUF: { // Leggi dalla reverse pipe (non bloccante)
             size = read(buffer->reverse_pipe_fd[PIPE_READ], &newitem, sizeof(Item));
             if (size < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) { return 0; } 
             else if (size == sizeof(Item)) { *item = newitem; } 

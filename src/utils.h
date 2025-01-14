@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <ncurses.h>
 #include "network.h"
+#include "processes.h"
 
 #define USLEEP 6000 
 
@@ -82,5 +83,21 @@ typedef enum settings { PLAY = 0, RECORD, QUIT } Menu;
 
 int input(int *c);
 #define loop_input(x) { do { usleep(USLEEP); } while(input(x) == 0); }
+
+/**
+ * @param line The line of the flow.
+ * @param direction The direction of the flow: LEFT or RIGHT.
+ * @param speed The speed of the flow.
+ * @param how_many_crocodiles The number of crocodiles in the flow.
+ * @param crocodiles An array of crocodiles of type Item.
+ */
+typedef struct Flow {
+    unsigned int line;
+    unsigned int direction;
+    unsigned int speed;
+    Item *crocodiles;
+    Item *bullets;
+    Item *granades;
+} Flow;
 
 #endif // UTILS_H

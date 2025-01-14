@@ -1,7 +1,7 @@
 #ifndef ENTITIES_H
 #define ENTITIES_H
 
-#include "processes.h"
+#include "utils.h"
 
 void frog(Buffer buffer, Item item);
 void moveFrog(Buffer* buffer, Item item, int direction);
