@@ -6,7 +6,6 @@
 #include <arpa/inet.h> // inet_addr
 #include <fcntl.h>
 
-int close_remote_value = N_CLOSE; 
 
 int set_nonblocking(int sockfd) {
     int flags = fcntl(sockfd, F_GETFL, 0);
@@ -91,5 +90,3 @@ int nsend(int client_socket, int* data) {
     return bytes_sent;
 }
 
-void remote() { global_client_socket = init_server(); }
-void close_remote() { nsend(global_client_socket, &close_remote_value); close(global_client_socket); }

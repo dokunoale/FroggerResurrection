@@ -82,6 +82,8 @@ typedef enum settings { PLAY = 0, RECORD, QUIT } Menu;
 #define setline(x) (settings_line + (x * settings_height))
 
 int input(int *c);
+void remote();
+void close_remote();
 #define loop_input(x) { do { usleep(USLEEP); } while(input(x) == 0); }
 
 /**

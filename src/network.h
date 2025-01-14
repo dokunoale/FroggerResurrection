@@ -24,7 +24,4 @@ int nsend(int client_socket, int* data);
 void remote();
 void close_remote();
 
-int global_client_socket;
-int ndata; // buffer for network data
-
 #endif // NETWORK_H
