@@ -9,4 +9,5 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
-bin/
+versione_processi/bin/
+versione_threads/bin/
