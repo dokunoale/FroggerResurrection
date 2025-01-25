@@ -53,8 +53,8 @@ void init_semaphores(buffer_t* cb) {
     cb->tail = 0;
     cb->count = 0;
     cb->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-    cb->not_full = sem_init(&cb->not_full, 0, BUFFER_SIZE);
-    cb->not_empty = sem_init(&cb->not_empty, 0, 0);
+    sem_init(&cb->not_full, 0, BUFFER_SIZE);
+    sem_init(&cb->not_empty, 0, 0);
 }
 
 // Distruggi il buffer -- deprecated
