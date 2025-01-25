@@ -5,7 +5,6 @@
 #include <locale.h>
 
 #define USLEEP 6000
-#define LC_ALL 0
 
 int client_socket;
 
