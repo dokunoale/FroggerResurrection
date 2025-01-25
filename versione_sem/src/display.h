@@ -31,7 +31,7 @@ enum colors {
 #define NO_COLOR -1
 
 void initDisplay();
-void detectScreenSize();
+int detectScreenSize();
 void displayTitle(WINDOW* win);
 void fill(WINDOW *win, int line, int column, int height, int width, int color);
 void displayTimer(WINDOW* win);

@@ -128,16 +128,17 @@ void initDisplay() {
     init_pair(TITLE_COLOR, COLOR_WHITE, COLOR_CYAN);
 }
 
-void detectScreenSize() {
-    while(LINES < WIN_MAIN_HEIGHT || COLS < WIN_MAIN_WIDTH) {
+int detectScreenSize() {
+    if(LINES < WIN_MAIN_HEIGHT || COLS < WIN_MAIN_WIDTH) {
         WINDOW* err_win = newwin(3, 20, (LINES - 3) / 2, (COLS - 20) / 2);
         box(err_win, 0, 0);
         mvwprintw(err_win, 1, 1, "%s", "Terminal too small");
         wrefresh(err_win);
         while(getch() == ERR) { /* do nothing */ }
-        clear();
         delwin(err_win);
+        return 0;
     }
+    return 1;
 }
 
 void fill(WINDOW *win, int line, int column, int height, int width, int color) {

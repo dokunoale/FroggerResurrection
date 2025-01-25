@@ -4,9 +4,12 @@
 #include "music.h"
 
 int main() {
+
     remote();
     initDisplay();
-    detectScreenSize();
+    int screen_size = detectScreenSize();
+    if (screen_size == 0) { endwin(); close_remote(); return 0; }
+
     WINDOW *main_win = newwin(WIN_MAIN_HEIGHT, WIN_MAIN_WIDTH, 0, 0); wrefresh(main_win);
 
     wbkgd(main_win, COLOR_PAIR(DROWNED_COLOR)); 
