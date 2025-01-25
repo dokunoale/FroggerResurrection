@@ -9,7 +9,7 @@
 #include "network.h"
 #include "threads.h"
 
-#define USLEEP 7000 
+#define USLEEP 8000 
 
 // directions
 #define RIGHT 1
