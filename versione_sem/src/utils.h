@@ -19,7 +19,7 @@
 #define BASE_SCORE 100
 
 #define NUM_FLOWS 8 // Numero dei flussi
-#define CROCODILE_ODDS (2000) // Probabilità di generare un coccodrillo 
+#define CROCODILE_ODDS (1600) // Probabilità di generare un coccodrillo 
 #define BULLET_ODDS (5) // Probabilità di generare un proiettile
 
 #define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso

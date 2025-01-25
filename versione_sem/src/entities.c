@@ -5,8 +5,8 @@
 void frog(Buffer buffer, Item item) {
     Item received;
     while(1) {
-        writeItem(&buffer, &item, MAIN_BUF);
         usleep(2000);
+        writeItem(&buffer, &item, MAIN_BUF);
         item.type = FROG;
         int c; 
         int size = readItem(&buffer, &received, REVERSE_BUF);
