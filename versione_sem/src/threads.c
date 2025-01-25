@@ -68,6 +68,12 @@ void free_semaphores(buffer_t* cb) {
 Buffer newBuffer() {
     Buffer buffer;
 
+    Item cleaner = {0};
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        main_buffer[i] = cleaner;
+        reverse_buffer[i] = cleaner;
+    }
+
     buffer.main_buf = &main_buf;
     buffer.reverse_buf = &reverse_buf;
 
