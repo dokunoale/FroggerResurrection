@@ -10,8 +10,8 @@ pthread_t tid_list[THREADS_NUM] = {0};
 
 Item main_buffer[BUFFER_SIZE];
 Item reverse_buffer[BUFFER_SIZE];
-buffer_t main_buf; // = {0, 0, 0, PTHREAD_MUTEX_INITIALIZER, 0, 0};
-buffer_t reverse_buf; // = {0, 0, 0, PTHREAD_MUTEX_INITIALIZER, 0, 0};
+buffer_t main_buf = {0, 0, 0, PTHREAD_MUTEX_INITIALIZER, 0, 0};
+buffer_t reverse_buf = {0, 0, 0, PTHREAD_MUTEX_INITIALIZER, 0, 0};
 args_t temp_args = {0};
 pthread_mutex_t create_mutex = PTHREAD_MUTEX_INITIALIZER;
 
