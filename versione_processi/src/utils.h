@@ -9,7 +9,7 @@
 #include "network.h"
 #include "processes.h"
 
-#define USLEEP 6000 
+#define USLEEP 7500 
 
 // directions
 #define RIGHT 1

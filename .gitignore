@@ -11,3 +11,4 @@ _deps
 CMakeUserPresets.json
 versione_processi/bin/
 versione_threads/bin/
+versione_sem/bin/

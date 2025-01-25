@@ -9,7 +9,7 @@
 #include "network.h"
 #include "threads.h"
 
-#define USLEEP 6000 
+#define USLEEP 7000 
 
 // directions
 #define RIGHT 1
@@ -19,7 +19,7 @@
 #define BASE_SCORE 100
 
 #define NUM_FLOWS 8 // Numero dei flussi
-#define CROCODILE_ODDS (100) // Probabilità di generare un coccodrillo 
+#define CROCODILE_ODDS (2000) // Probabilità di generare un coccodrillo 
 #define BULLET_ODDS (5) // Probabilità di generare un proiettile
 
 #define CROCODILE_MAX_NUM 3 // Numero massimo di coccodrilli per flusso
