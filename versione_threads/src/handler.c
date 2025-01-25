@@ -352,6 +352,8 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
 
         // Creates new random crocodiles if there is space on each flow
         for (unsigned int i = 0; i < NUM_FLOWS; i++) { fill_flow(&buffer, &flows[i]); }
+        if (frog_item.line < DEN_HEIGHT || frog_item.line >= DEN_HEIGHT + NUM_FLOWS) { /* do nothing */}
+        else if (is_above_any(&frog_item, flows[frog_item.line - DEN_HEIGHT].crocodiles) == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &frog_item); break; }
         
         switch (receveid.type) {
             case FROG: {
@@ -361,8 +363,8 @@ int manche(WINDOW* win, WINDOW* timer_win, Item* den) {
                     if (reached == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &receveid); break; }
                     else { reached->stage = 0; exit_status = WIN; displayItem(win, &frog_item, &receveid); break; }
                 }
-                if (receveid.line >= DEN_HEIGHT + NUM_FLOWS ||receveid.line <= DEN_HEIGHT) { /* do nothing */ }
-                else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &receveid); break; }
+                // if (receveid.line >= DEN_HEIGHT + NUM_FLOWS ||receveid.line <= DEN_HEIGHT) { /* do nothing */ }
+                // else if (is_above_any(&receveid, flow->crocodiles) == NULL) { exit_status = LOSE; play_sound(HIT); displayDeath(win, &frog_item, &receveid); break; }
 
                 displayItem(win, &frog_item, &receveid);
                 frog_item = receveid;
