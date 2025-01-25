@@ -3,18 +3,21 @@
 #include "display.h"
 
 void frog(Buffer buffer, Item item) {
-    writeItem(&buffer, &item, MAIN_BUF);
     Item received;
     while(1) {
+        writeItem(&buffer, &item, MAIN_BUF);
+        usleep(2000);
         item.type = FROG;
         int c; 
         int size = readItem(&buffer, &received, REVERSE_BUF);
         if (size != 0) { 
             if (received.line == item.line) {
                 item = received;
-                writeItem(&buffer, &item, MAIN_BUF); continue; 
+                // writeItem(&buffer, &item, MAIN_BUF); 
+                continue; 
             }
         } 
+        
         if (input(&c) == 0) continue;
         switch (c) {
             case 'q': item.type = EXIT; break;
@@ -28,7 +31,7 @@ void frog(Buffer buffer, Item item) {
             case 'A':; case 'a':;
             case KEY_LEFT:  if (item.column > 1)  item.column-= STEP; break;
         }
-        writeItem(&buffer, &item, MAIN_BUF);
+        // writeItem(&buffer, &item, MAIN_BUF);
     }
 }
 
