@@ -122,15 +122,7 @@ void newTask(Buffer *buffer, void (*func)(Buffer, Item), Item *item) {
 // Scrittura nel buffer
 void write_item(buffer_t* cb, Item* buf, Item* item) {
 
-    // pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
     pthread_mutex_lock(&cb->mutex);
-    
-    // Attendi se il buffer è pieno
-    while (cb->count >= BUFFER_SIZE) {
-        pthread_mutex_unlock(&cb->mutex);
-        random_rest(1, 2);
-        pthread_mutex_lock(&cb->mutex);
-    }
     pthread_testcancel();
     sem_wait(&cb->not_full);
 
@@ -142,9 +134,8 @@ void write_item(buffer_t* cb, Item* buf, Item* item) {
     // Segnala che il buffer non è vuoto
     sem_post(&cb->not_empty);
     pthread_mutex_unlock(&cb->mutex);
-    // pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 
-    // random_rest(5, 10);
+    random_rest(0, 2);
 }   
 
 // Lettura dal buffer
